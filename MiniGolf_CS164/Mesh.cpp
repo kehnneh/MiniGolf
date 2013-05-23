@@ -6,8 +6,6 @@
 #include "Mesh.h"
 #include "CommonUtils.h"
 
-glm::vec4 color(0.f, 0.f, 0.f, 0.f);
-
 unsigned char Mesh::Initialize()
 {
   _vertexData = new std::vector<glm::vec3>;
@@ -187,6 +185,21 @@ unsigned char Mesh::GenerateColors()
   return STATUS_OK;
 }
 */
+
+std::vector<glm::vec3> const & Mesh::VertexData() const
+{
+  return *_vertexData;
+}
+
+std::vector<glm::vec3> const & Mesh::NormalData() const
+{
+  return *_normalData;
+}
+
+std::vector<unsigned int> const & Mesh::IndexData() const
+{
+  return *_indexData;
+}
 
 Mesh* Mesh::VerticalQuad(glm::vec3 const & vb1, glm::vec3 const & vb2)
 {

@@ -25,6 +25,15 @@ private:
 
   GLenum _drawMode;
 
+  void BindBuffer(
+    GLenum target, // GL_ARRAY_BUFFER
+    GLuint buffer, // shader->vertexBuffer
+    std::vector<glm::vec3> const & data, // the actual data you want to use
+    GLenum usage, // GL_DYNAMIC_DRAW
+    GLint attarr, // shader->vertex **TYPE MISMATCH IN GLEW! data is returned as a GLint but this function wants a GLuint!
+    bool const & vertAttrib
+  );
+
 public:
   NewRenderable() :
       _colorData(0),
@@ -32,6 +41,7 @@ public:
       _mesh(0),
       _drawMode(GL_TRIANGLES)
   {}
+
   ~NewRenderable()
   {}
 
@@ -62,6 +72,8 @@ public:
   unsigned char Color(glm::vec4 const & color);
 
   unsigned char DrawMode(GLenum mode);
+
+  void Render();
 
   Mesh const * GetMesh() const;
 

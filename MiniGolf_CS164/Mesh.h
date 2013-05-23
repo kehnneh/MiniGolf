@@ -75,6 +75,21 @@ public:
   unsigned char PostLoad();
 
   /*
+   * Returns the Mesh's vertex data
+   */
+  std::vector<glm::vec3> const & VertexData() const;
+
+  /*
+   * Returns the Mesh's normal data
+   */
+  std::vector<glm::vec3> const & NormalData() const;
+
+  /*
+   * Returns the Mesh's polygonal index data
+   */
+  std::vector<unsigned int> const & IndexData() const;
+
+  /*
    * Creates and returns a new Vertical-Quad mesh from the given two base points
    */
   static Mesh* VerticalQuad(glm::vec3 const & vb1, glm::vec3 const & vb2);
