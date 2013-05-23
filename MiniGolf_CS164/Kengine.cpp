@@ -160,6 +160,6 @@ void Kengine::Run()
 
 void Kengine::DeInit()
 {
-	SAFE_DELETE(userInput);
-	SAFE_DELETE(shader);
+	Delete(&userInput);
+	Delete(&shader);
 }

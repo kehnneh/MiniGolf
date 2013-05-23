@@ -1,9 +1,19 @@
 #include <vector>
 
-#define SAFE_DELETE(X) if (X) { delete X; X = 0; }
+#define STATUS_OK 0x1
+
+template <typename T>
+void Delete(T **thing)
+{
+  if (*thing)
+  {
+    delete (*thing);
+    (*thing) = 0;
+  }
+}
 
 template<typename T>
-void DeleteVector(std::vector<T*> **vec)
+void DeleteVectorPtrs(std::vector<T*> **vec)
 {
   if (*vec)
   {

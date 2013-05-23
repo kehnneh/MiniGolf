@@ -20,12 +20,12 @@ void MatrixObject::Init()
 
 void MatrixObject::DeInit()
 {
-  SAFE_DELETE(_scale);
-  SAFE_DELETE(_rot);
-  SAFE_DELETE(_pos);
-  SAFE_DELETE(_rotmat);
-  SAFE_DELETE(_posmat);
-  SAFE_DELETE(_mat);
+  Delete(&_scale);
+  Delete(&_rot);
+  Delete(&_pos);
+  Delete(&_rotmat);
+  Delete(&_posmat);
+  Delete(&_mat);
 }
 
 void IncrementDegreesWrap(float& val, float degrees, float limit)

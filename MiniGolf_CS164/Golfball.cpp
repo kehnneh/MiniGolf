@@ -20,7 +20,7 @@ bool Golfball::Init()
 
 void Golfball::DeInit()
 {
-  SAFE_DELETE(_sphere);
+  Delete(&_sphere);
 }
 
 void Golfball::Render(Camera* camera)

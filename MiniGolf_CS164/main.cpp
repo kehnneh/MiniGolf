@@ -11,8 +11,20 @@ int main(int argc, char** argv)
 	//k->Run();
 
   Mesh *m = new Mesh;
-  m->Initialize();
-  m->LoadFromFile("Models/golfball.obj");
+  if (m->Initialize() != 0x1)
+  {
+    return 1;
+  }
+
+  if (m->LoadFromFile("Models/golfball.obj") != 0x1)
+  {
+    return 2;
+  }
+
+  if (m->PostLoad() != 0x1)
+  {
+    return 3;
+  }
 
 	return 0;
 }

@@ -10,7 +10,7 @@ void Projection::Init()
 
 void Projection::DeInit()
 {
-	SAFE_DELETE(_mat);
+	Delete(&_mat);
 }
 
 void Projection::fovy(float fovy) {	_fovy = fovy; _bNeedsUpdate = true; }

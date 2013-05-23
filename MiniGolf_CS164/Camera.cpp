@@ -22,7 +22,7 @@ void Camera::Init()
 
 void Camera::DeInit()
 {
-	SAFE_DELETE(_mat);
+	Delete(&_mat);
 }
 
 void Camera::InitMatrix() {	*_mat = glm::lookAt(_origin, _direction, _up); }

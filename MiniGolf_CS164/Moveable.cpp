@@ -15,7 +15,7 @@ void Moveable::Init()
 
 void Moveable::DeInit()
 {
-  SAFE_DELETE(_velocity);
+  Delete(&_velocity);
 }
 
 void Moveable::SetTile(Tile * t)

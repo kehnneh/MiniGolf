@@ -12,7 +12,7 @@ void VertexObject::Init()
 
 void VertexObject::DeInit()
 {
-  SAFE_DELETE(_vert);
+  Delete(&_vert);
 }
 
 float VertexObject::Length() const

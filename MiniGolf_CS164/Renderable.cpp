@@ -14,12 +14,12 @@ static Shader* activeShader = 0;
 
 void Renderable::DeInit()
 {
-	SAFE_DELETE(normalData);
-	SAFE_DELETE(indexData);
-	SAFE_DELETE(colorData);
-	SAFE_DELETE(vertexData);
+	Delete(&normalData);
+	Delete(&indexData);
+	Delete(&colorData);
+	Delete(&vertexData);
   transform->DeInit();
-	SAFE_DELETE(transform);
+	Delete(&transform);
 }
 
 MatrixObject *Renderable::Matrix() const
