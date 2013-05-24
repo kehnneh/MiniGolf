@@ -3,13 +3,13 @@
 #include <vector>
 #include <string>
 
-#include "NewRenderable.h"
+#include "NewTile.h"
 
 class NewLevel
 {
 private:
   // This needs to be NewTile*
-  std::vector<NewRenderable*> *_tiles;
+  std::vector<NewTile*> *_tiles;
 
   glm::vec3 *_lightSourceDirection;
   glm::vec4 *_ambient;

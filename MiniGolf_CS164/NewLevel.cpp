@@ -1,13 +1,16 @@
 #include "NewLevel.h"
+#include "NewRenderable.h"
 
 #include <fstream>
+
+using namespace std;
 
 /// Utilities
 #include "CommonUtils.h"
 
 unsigned char NewLevel::Initialize()
 {
-  _tiles = new std::vector<NewRenderable*>;
+  _tiles = new vector<NewTile*>;
   _ambient = new glm::vec4;
   _lightSourceDirection = new glm::vec3;
 
@@ -17,15 +20,20 @@ unsigned char NewLevel::Initialize()
 unsigned char NewLevel::DeInitialize()
 {
   Delete(&_tiles);
+  Delete(&_ambient);
+  Delete(&_lightSourceDirection);
 
   return STATUS_OK;
 }
 
-unsigned char NewLevel::LoadFromFile(std::string filename)
+// IMPORTANT: Tiles in the level filed are specified in sequential order!
+// accumulate neighbor lists of unsigned ints, then search the accumulated Tiles to extract their pointers
+unsigned char NewLevel::LoadFromFile(string filename)
 {
-  std::ifstream fin(filename.c_str());
+  ifstream fin(filename.c_str());
 	char c;
 	unsigned short id, edges;
+  vector<vector<unsigned int> *> neighborIntList;
 
 	if(fin.fail()) {
 		// Log failure to open file
@@ -50,51 +58,40 @@ unsigned char NewLevel::LoadFromFile(std::string filename)
         m->Initialize();
 
 				fin >> edges;
-        std::vector<glm::vec3> *vertices = new std::vector<glm::vec3>;
+        vector<glm::vec3> *vertices = new vector<glm::vec3>;
 
 				// Read the vertices of the Mesh: Tile's are NOT loaded through the *.obj format
 				for(int i = 0; i < edges; i++)
 				{
           glm::vec3 vertex;
-
 					fin >> vertex.x >> vertex.y >> vertex.z;
-
           vertices->push_back(vertex);
 				}
 
         m->LoadFromData(vertices);
         m->PostLoad();
 
+        NewRenderable::Color(glm::vec4(0.f, 1.f, 0.f, 1.f));
         NewRenderable *renderable = new NewRenderable;
         renderable->Initialize();
         renderable->SetMesh(m);
-        NewRenderable::Color(glm::vec4(0.f, 1.f, 0.f, 1.f));
         renderable->PostLoad();
 
-        _tiles->push_back(renderable);
+        NewTile* tile = new NewTile;
+        tile->Initialize();
+        tile->SetRenderable(renderable);
 
-				//r->Init(vertData, edges);
-				//r->TileInit();
+        _tiles->push_back(tile);
 
-        /* Bind 'renderable' to a Tile */
-
-				// ACQUIRE NEIGHBORS THROUGH POINTERS RELATIVE TO THE TILE!
-        // IN OTHER WORDS: MAKE THE TILE OBJECT BEFORE THIS, AND CREATE ADJACENCY LISTS
-        // AFTER TILES ARE MADE
-        /*
+        // Acquire a list of unsigned ints of the neighbors from the file. To be sorted through later
+        vector<unsigned int> *neighbors = new vector<unsigned int>;
 				for (int i = 0; i < edges; i++)
 				{
 					fin >> id;
-					if (!r->SetNeighbor(i, id))
-					{
-						// Log error
-						return 0x4;
-					}
+					neighbors->push_back(id);
 				}
-        */
-				//r->Finalize();
-
-				//tiles.push_back(r);
+        
+        neighborIntList.push_back(neighbors);
 			}
 			else if (c == 'e') // Is the word 'tee'?
 			{
@@ -105,10 +102,8 @@ unsigned char NewLevel::LoadFromFile(std::string filename)
         Mesh *m = new Mesh;
         m->Initialize();
 
-        std::vector<glm::vec3> *vertices = new std::vector<glm::vec3>;
+        vector<glm::vec3> *vertices = new vector<glm::vec3>;
 
-				//Renderable* r = new Renderable;
-				//glm::vec3* vertData = new glm::vec3[4];
         vertices->push_back(teePos + glm::vec3(.1f, .01f, .1f));
         vertices->push_back(teePos + glm::vec3(-.1f, .01f, .1f));
         vertices->push_back(teePos + glm::vec3(-.1f, .01f, -.1f));
@@ -136,7 +131,7 @@ unsigned char NewLevel::LoadFromFile(std::string filename)
       Mesh *m = new Mesh;
       m->Initialize();
 
-      std::vector<glm::vec3> *vertices = new std::vector<glm::vec3>;
+      vector<glm::vec3> *vertices = new vector<glm::vec3>;
 
 			//Renderable* r = new Renderable;
 			//glm::vec3* vertData = new glm::vec3[4];
@@ -189,6 +184,20 @@ unsigned char NewLevel::LoadFromFile(std::string filename)
 	}
 
 	fin.close();
+
+  unsigned int numTiles = neighborIntList.size();
+  for (unsigned int i = 0; i < numTiles; i++)
+  {
+    unsigned int numNeighbors = neighborIntList.at(i)->size();
+    vector<NewTile*> *neighbors = new vector<NewTile*>;
+    for (unsigned int j = 0; j < numNeighbors; j++)
+    {
+      unsigned int tileid = neighborIntList.at(i)->at(j);
+      neighbors->push_back(_tiles->at(tileid == 0 ? 0 : tileid - 1));
+    }
+    _tiles->at(i)->SetNeighbors(neighbors);
+    _tiles->at(i)->PostLoad();
+  }
 
   /*
 	// Load the golf ball!

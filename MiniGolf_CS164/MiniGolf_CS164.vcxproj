@@ -93,6 +93,7 @@
     <ClCompile Include="Moveable.cpp" />
     <ClCompile Include="NewLevel.cpp" />
     <ClCompile Include="NewRenderable.cpp" />
+    <ClCompile Include="NewTile.cpp" />
     <ClCompile Include="Projection.cpp" />
     <ClCompile Include="Renderable.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -114,6 +115,7 @@
     <ClInclude Include="Moveable.h" />
     <ClInclude Include="NewLevel.h" />
     <ClInclude Include="NewRenderable.h" />
+    <ClInclude Include="NewTile.h" />
     <ClInclude Include="Projection.h" />
     <ClInclude Include="Renderable.h" />
     <ClInclude Include="Shader.h" />
@@ -123,8 +125,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="frag.glsl" />
-    <None Include="Holes\hole.00.db" />
-    <None Include="Holes\hole.01.db" />
+    <None Include="Holes\hole.00.db">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Holes\hole.01.db">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Holes\hole.02.db" />
     <None Include="vert.glsl" />
   </ItemGroup>
