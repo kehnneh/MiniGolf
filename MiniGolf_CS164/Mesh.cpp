@@ -204,6 +204,7 @@ std::vector<unsigned int> const & Mesh::IndexData() const
 Mesh* Mesh::VerticalQuad(glm::vec3 const & vb1, glm::vec3 const & vb2)
 {
   Mesh *m = new Mesh;
+  m->Initialize();
 
   std::vector<glm::vec3> *vertices = new std::vector<glm::vec3>;
 

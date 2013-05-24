@@ -7,6 +7,7 @@
 
 /// My stuff
 #include "Mesh.h"
+#include "Shader.h"
 
 //
 // No functionality for texturing is provided. It is unnecessary.
@@ -83,6 +84,8 @@ public:
    * Sets the draw mode of this renderable to the specified mode
    */
   unsigned char DrawMode(GLenum mode);
+
+  static void UseShader(Shader* shader);
 
   /*
    * Copies data from the CPU and pushes it to the GPU

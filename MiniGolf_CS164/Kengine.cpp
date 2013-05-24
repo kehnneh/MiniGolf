@@ -117,6 +117,7 @@ bool Kengine::Init(int argc, char** argv)
 
 	// Set the Renderable class to use the shader
 	Renderable::BindShader(shader);
+  NewRenderable::UseShader(shader);
 
 	c[0] = new FreelookCamera;
 	c[0]->Init();
@@ -136,6 +137,10 @@ bool Kengine::Init(int argc, char** argv)
 
 	level = new Level;
 	level->Init(argv[1]);
+
+  LEVEL = new NewLevel;
+  LEVEL->Initialize();
+  LEVEL->LoadFromFile(argv[1]);
 
   _timer = new GameTimer;
   _timer->Init();

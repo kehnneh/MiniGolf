@@ -149,7 +149,7 @@ bool Renderable::Init(char* filename)
 			indexIndex += 3;
 		}
 
-		while (c != '\n')
+		while (c != '\n' && !fin.eof())
 		{
 			fin.get(c);
 		}

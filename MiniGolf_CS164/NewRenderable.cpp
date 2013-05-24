@@ -108,6 +108,11 @@ void NewRenderable::Render()
   BindBuffer(GL_ELEMENT_ARRAY_BUFFER, __shader->indexBuffer, _mesh->IndexData(), GL_STATIC_DRAW, 0);
 }
 
+void NewRenderable::UseShader(Shader* shader)
+{
+  __shader = shader;
+}
+
 Mesh const * NewRenderable::GetMesh() const
 {
   return _mesh;

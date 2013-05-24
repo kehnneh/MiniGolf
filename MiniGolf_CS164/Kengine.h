@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Camera.h"
+#include "NewLevel.h"
 
 class UserInput;
 class Shader;
@@ -23,6 +24,7 @@ public:
 
 	Shader *shader;
 
+  NewLevel *LEVEL;
 	UserInput *userInput;
 	Projection *_projection;
 	Camera *c[2];
