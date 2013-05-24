@@ -99,6 +99,9 @@
     <ClCompile Include="NewRenderable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="NewLevel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommonUtils.h">
@@ -153,6 +156,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NewRenderable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NewLevel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

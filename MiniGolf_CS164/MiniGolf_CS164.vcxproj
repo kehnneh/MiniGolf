@@ -91,6 +91,7 @@
     <ClCompile Include="MatrixObject.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Moveable.cpp" />
+    <ClCompile Include="NewLevel.cpp" />
     <ClCompile Include="NewRenderable.cpp" />
     <ClCompile Include="Projection.cpp" />
     <ClCompile Include="Renderable.cpp" />
@@ -111,6 +112,7 @@
     <ClInclude Include="MatrixObject.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Moveable.h" />
+    <ClInclude Include="NewLevel.h" />
     <ClInclude Include="NewRenderable.h" />
     <ClInclude Include="Projection.h" />
     <ClInclude Include="Renderable.h" />

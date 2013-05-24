@@ -26,8 +26,6 @@ protected:
 	std::vector<Renderable*> borders;
   // Imaginary borders that the golf ball can enter a new tile through
   
-
-
 	void GenerateColor();
 
 public:

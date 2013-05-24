@@ -12,7 +12,7 @@ void Delete(T **thing)
   }
 }
 
-template<typename T>
+template <typename T>
 void DeleteVectorPtrs(std::vector<T*> **vec)
 {
   if (*vec)
