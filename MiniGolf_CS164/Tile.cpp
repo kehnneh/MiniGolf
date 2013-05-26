@@ -141,3 +141,8 @@ unsigned char Tile::Render(Camera *camera, Shader *s)
 
   return STATUS_OK;
 }
+
+glm::vec3 Tile::Normal()
+{
+  return _surface->GetMesh()->NormalData().at(0);
+}

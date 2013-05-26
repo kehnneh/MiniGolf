@@ -1,6 +1,7 @@
+#include <gl\glew.h>
 #include <gl\freeglut.h>
 
-#include "MatrixObject.h"
+#include "Ball.h"
 #include "UserInput.h"
 #include "Camera.h"
 
@@ -13,7 +14,7 @@ void UserInput::Init()
 void UserInput::DeInit()
 {
 	camera = 0;
-  _ballDirection = 0;
+  _ball = 0;
 }
 
 void UserInput::PressKey(unsigned char key)
@@ -46,9 +47,9 @@ void UserInput::BindCamera(Camera* c)
 	camera = c;
 }
 
-void UserInput::BindDirection(MatrixObject *direction)
+void UserInput::BindBall(Ball *ball)
 {
-  _ballDirection = direction;
+  _ball = ball;
 }
 
 void UserInput::Tick(const double dt)
@@ -94,10 +95,14 @@ void UserInput::Tick(const double dt)
   // Ball Direction control
   else if (m_specialKeys[GLUT_KEY_LEFT])
   {
-    _ballDirection->IncYaw(-1.f * _directionSensitivity * t);
+    _ball->DirectionMatrix()->IncYaw(-1.f * _directionSensitivity * t);
   }
   else if (m_specialKeys[GLUT_KEY_RIGHT])
   {
-    _ballDirection->IncYaw(1.f * _directionSensitivity * t);
+    _ball->DirectionMatrix()->IncYaw(1.f * _directionSensitivity * t);
+  }
+  else if (m_specialKeys[GLUT_KEY_UP])
+  {
+    _ball->Hit(1.f);
   }
 }

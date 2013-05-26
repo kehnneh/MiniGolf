@@ -4,10 +4,11 @@
 
 #include "CommonUtils.h"
 #include <glm\gtc\matrix_inverse.hpp>
+#include <glm\gtx\rotate_vector.hpp>
 
 unsigned char Ball::Initialize()
 {
-  _velocity = new glm::vec3;
+  _velocity = new glm::vec3(0.f, 0.f, 1.f);
   _transform = new MatrixObject;
   _transform->Init();
 
@@ -37,9 +38,9 @@ unsigned char Ball::SetRenderable(Renderable *renderable)
   return STATUS_OK;
 }
 
-unsigned char DetectChange(glm::vec3 norm, glm::vec3 pos)
+unsigned char DetectChange(glm::vec3 norm, glm::vec3 pos, float d)
 {
-  float p = glm::dot(norm, pos);
+  float p = glm::dot(norm, pos) + d;
 
   if (p > 0.f)
   {
@@ -56,6 +57,7 @@ unsigned char DetectChange(glm::vec3 norm, glm::vec3 pos)
 void Ball::Hit(float power)
 {
   _speed = power;
+  //*_velocit
 }
 
 float Ball::DetectCollision(glm::vec3 const & pos, glm::vec3 const & endPos, const Mesh *m, float dist)
@@ -63,14 +65,20 @@ float Ball::DetectCollision(glm::vec3 const & pos, glm::vec3 const & endPos, con
   unsigned char pos_state, endPos_state;
 
   glm::vec3 norm = m->NormalData().at(0);
+  float d = -glm::dot(m->VertexData().at(0), norm);
 
-  pos_state = DetectChange(norm, pos + (-norm * dist));
-  endPos_state = DetectChange(norm, endPos + (-norm * dist));
+  pos_state = DetectChange(norm, pos + (-norm * dist), d);
+  endPos_state = DetectChange(norm, endPos + (-norm * dist), d);
 
-  // If they are on different sides of the plane
+  // Orientation relative to the hyperplane described by the normal obtained!
   if (pos_state != endPos_state)
   {
+    glm::vec3 ray = endPos - pos;
+    ray = glm::normalize(ray);
 
+    float timeToCollide = - (d + glm::dot(norm, pos)) / glm::dot(norm, ray);
+    return timeToCollide;
+    //t = - (d + D3DXVec3Dot(&vNormal, &pStart)) / D3DXVec3Dot(&vNormal, &ray);
   }
 
   return 0.f;
@@ -93,10 +101,39 @@ unsigned char Ball::Tick(double t)
   _direction->Matrix()->Position(*_transform->Position());
   _direction->Tick(t);
 
+  _speed -= 0.02f;
+
   if (_speed <= 0.f)
   {
+    _speed = 0.f;
     return STATUS_OK;
   }
+
+  // need to rotate _velocity to the Arrow's rotation
+  //glm::vec3 direction = glm::rotateY(*_velocity, _direction->Matrix()->Rotation()->y);
+  glm::vec3 direction = glm::normalize(glm::rotate(*_velocity, glm::degrees(_direction->Matrix()->Rotation()->y), _tile->Normal()));
+
+  glm::vec3 pos = *_transform->Position();
+  glm::vec3 endpos = *_transform->Position() + (((float) t * _speed) * direction);
+
+  // COLLISION DETECTION! DID WE COLLIDE INTO ANOTHER TILE?
+  std::vector<Mesh*> *fakeWalls = _tile->FakeWalls();
+  std::vector<Mesh*>::iterator fit = fakeWalls->begin(), fitend = fakeWalls->end();
+  for (; fit != fitend; ++fit)
+  {
+    if (*fit)
+    {
+      float timeElapsed = DetectCollision(pos, endpos, (*fit), 0.f);
+      if (timeElapsed < t)
+      {
+        // we collided, find the new tile to move to, and update the position, and velocity
+        //_tile = _tile->N
+      }
+    }
+  }
+
+  _transform->Position(endpos);
+  _direction->Matrix()->Position(endpos);
 
   /*
   // calculate starting position and final position

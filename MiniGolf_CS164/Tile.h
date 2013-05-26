@@ -58,6 +58,8 @@ public:
 
   unsigned char Render(Camera *camera, Shader *s);
 
+  glm::vec3 Normal();
+
   std::vector<Renderable*> *RealWalls();
 
   std::vector<Mesh*> *FakeWalls();
