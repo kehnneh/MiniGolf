@@ -60,7 +60,7 @@ unsigned char Tile::SetNeighbors(std::vector<Tile*> *neighbors)
 unsigned char Tile::PostLoad()
 {
   // All created walls are going to be this color 
-  Renderable::Color(glm::vec4(1.f, 0.f, 0.f, 1.f));
+  Renderable::Color(glm::vec4(.75f, 0.f, 0.f, 1.f));
 
   std::vector<glm::vec3> vertices = _surface->GetMesh()->VertexData();
 

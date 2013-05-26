@@ -218,6 +218,10 @@ unsigned char Level::LoadFromFile(string filename)
   ballMat->Position(teePos + glm::vec3(0.f, .05f, 0.f));
   ballMat->Scale(0.05);
 
+  MatrixObject* arrowMat = _ball->DirectionMatrix();
+  arrowMat->Scale(0.25f);
+  //arrowMat->Position(*ballMat->Position());
+
 	return STATUS_OK;
 }
 
@@ -248,11 +252,16 @@ unsigned char Level::Render(Camera *camera, Shader *shader)
   
   for (; it != end; ++it)
   {
-    //(*it)->Render(camera, shader);
+    (*it)->Render(camera, shader);
   }
 
   // Render the ball, tee, and hole
   _ball->Render(camera, shader);
 
   return STATUS_OK;
+}
+
+Ball *Level::GetBall()
+{
+  return _ball;
 }

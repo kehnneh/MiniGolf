@@ -56,5 +56,7 @@ public:
   unsigned char Tick(double t);
 
   unsigned char Render(Camera *camera, Shader *shader);
+
+  Ball *GetBall();
 };
 

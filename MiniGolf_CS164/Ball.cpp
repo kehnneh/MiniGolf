@@ -81,11 +81,17 @@ MatrixObject *Ball::Matrix()
   return _transform;
 }
 
+MatrixObject *Ball::DirectionMatrix()
+{
+  return _direction->Matrix();
+}
+
 unsigned char Ball::Tick(double t)
 {
   _transform->Tick();
 
   _direction->Matrix()->Position(*_transform->Position());
+  _direction->Tick(t);
 
   if (_speed <= 0.f)
   {

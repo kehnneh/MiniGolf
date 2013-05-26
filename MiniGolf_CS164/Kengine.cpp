@@ -150,6 +150,8 @@ bool Kengine::Init(int argc, char** argv)
   LEVEL->LoadFromFile(argv[1]);
   LEVEL->PostLoad();
 
+  userInput->BindDirection(LEVEL->GetBall()->DirectionMatrix());
+
   _timer = new GameTimer;
   _timer->Init();
 

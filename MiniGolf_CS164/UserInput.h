@@ -7,7 +7,7 @@ class UserInput
 {
 private:
 	Camera *camera;
-  float _rotationSensitivity, _movementSensitivity;
+  float _rotationSensitivity, _movementSensitivity, _directionSensitivity;
 
   MatrixObject *_ballDirection;
 
@@ -21,8 +21,8 @@ public:
 		: camera(0),
       _ballDirection(0),
 #pragma warning( suppress : 4351 )
-		  m_keys(),
-      _rotationSensitivity(50.f), _movementSensitivity(5.f)
+		  m_keys(), m_specialKeys(),
+      _rotationSensitivity(50.f), _movementSensitivity(5.f), _directionSensitivity(10.f)
 	{}
 
 	~UserInput()

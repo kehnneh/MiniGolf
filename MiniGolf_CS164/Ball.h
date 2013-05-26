@@ -55,6 +55,8 @@ public:
 
   MatrixObject *Matrix();
 
+  MatrixObject *DirectionMatrix();
+
   float Radius();
 };
 

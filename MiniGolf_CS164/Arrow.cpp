@@ -13,7 +13,7 @@ unsigned char Arrow::Initialize()
   _renderable = new Renderable;
   _renderable->Initialize();
   _renderable->LoadFromFile("Models/Arrow.obj");
-  Renderable::Color(glm::vec4(0.f, 0.f, 1.f, 1.f));
+  Renderable::Color(glm::vec4(.0f, 1.f, 1.f, 1.f));
   _renderable->PostLoad();
 
   Mesh *m = _renderable->GetMesh();

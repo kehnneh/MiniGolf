@@ -3,6 +3,7 @@
 #include "CommonUtils.h"
 #include <glm\gtx\transform.hpp>
 #include <glm\gtc\quaternion.hpp>
+#include <glm\gtx\euler_angles.hpp>
 
 #define UPDATE_ROTATION 0x1
 #define UPDATE_POSITION 0x2
@@ -227,7 +228,7 @@ void MatrixObject::Tick()
 
   if (_updateFlags)
   {
-    *_mat = glm::scale(*_scale) * *_rotmat * *_posmat;
+    *_mat = glm::scale(*_scale) * *_posmat * *_rotmat;// *_rotmat * *_posmat;
     _updateFlags = 0x0;
   }
 }
