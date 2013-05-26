@@ -1,64 +1,65 @@
 #pragma once
 
-#include <glm\glm.hpp>
-#include "Renderable.h"
-#include "Moveable.h"
-
 #include <vector>
+#include "Renderable.h"
+#include "Camera.h"
+#include "Shader.h"
+class Ball;
 
-class Camera;
-
-// use glm::intersectRayTriangle to determine if the ball has left the tile
-// DO NOT USE BOUNDS, Tiles are NOT guaranteed to be rectangular shapes!
-
-class Tile : public Renderable
+class Tile
 {
 private:
-  glm::vec3 *_slope;
+  // This is the renderable that is drawn for this tile.
+  Renderable *_surface;
 
-  void ComputeSlope(const glm::vec3 up);
+  std::vector<Tile*> *_neighbors;
 
-protected:
-	unsigned short edges;
-	unsigned short* neighbors;
+  // Collision boundaries between tiles. Check these to see if the Tile has entered another tile
+  std::vector<Mesh*> *_tileBounds;
 
-  // Physical borders that the golf ball can collide with
-	std::vector<Renderable*> borders;
-  // Imaginary borders that the golf ball can enter a new tile through
-  
-	void GenerateColor();
+  // Physical boundaries at the edge of the world. Check these to see if the Ball has collided with a wall
+  std::vector<Renderable*> *_tileWalls;
+
+  glm::vec3 *_xaxis, *_zaxis;
+
+  unsigned char ComputeXZPlane(glm::vec3 const & up);
 
 public:
-	unsigned int tileId;
+  Tile() :
+    _surface(0),
+    _neighbors(0),
+    _tileBounds(0),
+    _tileWalls(0),
+    _xaxis(0),
+    _zaxis(0)
+  {}
 
-	Tile() :
-      tileId(0),
-		  edges(0),
-		  neighbors(0),
-      _slope(0)
-	{}
+  ~Tile()
+  {}
 
-	Tile(unsigned short Id) :
-      tileId(Id),
-		  edges(0),
-		  neighbors(0),
-      _slope(0)
-	{}
+  /*
+   * _neighbors and _surface will be specifically passed into Tile instances, and are not allocated here
+   */
+  unsigned char Initialize();
 
-	~Tile()
-	{}
+  unsigned char DeInitialize();
 
-	void TileInit();
+  unsigned char SetRenderable(Renderable *renderable);
 
-	void DeInit();
+  unsigned char SetNeighbors(std::vector<Tile*> *neighbors);
 
-	bool SetNeighbor(unsigned short edgeId, unsigned short neighborTileId);
+  /*
+   * Initializes Meshes for the imaginary bounds between tiles and Renderables for the physical bounds
+   * between the tiles and the world.
+   */
+  unsigned char PostLoad();
 
-	void Finalize();
-	void RenderBorders(Camera* c);
+  unsigned char Tick(double t);
 
-  glm::vec3 *Normal() const;
-  glm::vec3 *FirstVertex(unsigned int tri) const;
-  unsigned int Tile::TriangleCount() const;
+  unsigned char Render(Camera *camera, Shader *s);
+
+  std::vector<Renderable*> *RealWalls();
+
+  std::vector<Mesh*> *FakeWalls();
 };
 

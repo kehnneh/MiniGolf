@@ -33,6 +33,10 @@ private:
   unsigned char GenerateNormals();
 
   /*
+   * Populates _indexData
+   */
+  unsigned char GenerateIndices();
+  /*
    * Populates _colorData
    */
   //unsigned char GenerateColors();

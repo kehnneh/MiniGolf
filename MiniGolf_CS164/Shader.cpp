@@ -52,8 +52,8 @@ void Shader::BindUniforms()
 	mat_normal = glGetUniformLocation(program, "normalMat");
 
 	sun = glGetUniformLocation(program, "L_p");
+  eye = glGetUniformLocation(program, "Eye");
 	ambient = glGetUniformLocation(program, "ambient");
-	eye = glGetUniformLocation(program, "eye");
 }
 
 void Shader::BindBufferObjects()

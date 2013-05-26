@@ -1,71 +1,106 @@
 #pragma once
 
-#include <GL\glew.h>
+/// STL | GLM stuff
+#include <vector>
+#include <gl\glew.h>
 #include <glm\glm.hpp>
-#include <glm\gtc\type_ptr.hpp>
-#include <glm\gtx\transform.hpp>
-#include "MatrixObject.h"
 
-class Shader;
-class Camera;
+/// My stuff
+#include "Mesh.h"
+#include "Shader.h"
 
+//
+// No functionality for texturing is provided. It is unnecessary.
+//
 class Renderable
 {
-protected:
-	unsigned int vertices, indices;
-
-	// The matrix doesn't do anything right now, since the vertices are hard coded. Vertices need to be abstracted such that
-	// the transform matrix represents the renderable's orientation. For tiles, the transform matrix should be the center of the tile
-	//glm::mat4* transform;
-
-	MatrixObject *transform;
-
-	glm::vec4* colorData;
-	glm::vec3* vertexData;
-	glm::vec3* normalData;
-	unsigned int* indexData;
-
 private:
-	GLenum drawMode;
+  // (U, V) coordinates for each vertex in the Mesh
+  // std::vector<glm::vec2> *_textureData;
+  std::vector<glm::vec4> *_colorData;
+  
+  Mesh *_mesh;
 
-	void BindVertices();
-	void BindNormals();
-	void BindIndices();
-	void BindColors();
+  GLenum _drawMode;
 
-	void TriangulateVertices();
-	void GenerateNormals();
+  /*
+   * Populates _colorData. Not necessary for a mesh, and not necessary if there is a texture
+   * associated with the renderable.
+   */
+  unsigned char GenerateColors();
+
+  template <typename T>
+  void BindBuffer(
+    GLenum target, // GL_ARRAY_BUFFER
+    GLuint buffer, // shader->vertexBuffer
+    std::vector<T> const & data, // the actual data you want to use
+    int size,
+    GLenum usage, // GL_DYNAMIC_DRAW
+    GLint attarr // shader->vertex **TYPE MISMATCH IN GLEW! data is returned as a GLint but this function wants a GLuint!
+  );
 
 public:
-	Renderable()
-		: vertices(0),
-		  indices(0),
-		  drawMode(GL_TRIANGLES),
-		  transform(0),
-		  colorData(0),
-		  vertexData(0),
-		  normalData(0),
-		  indexData(0)
-	{}
-	~Renderable()
-	{}
+  Renderable() :
+      _colorData(0),
+      // _textureData(0),
+      _mesh(0),
+      _drawMode(GL_TRIANGLES)
+  {}
 
-	bool Init(char* filename);
-	bool Init(glm::vec3* vertData, unsigned int numVerts);
+  ~Renderable()
+  {}
 
-	void DeInit();
+  /*
+   * Allocates memory
+   */
+  unsigned char Initialize();
 
-  void Tick();
+  /*
+   * Frees memory
+   */
+  unsigned char DeInitialize();
 
-	void Render(Camera* c);
+  /*
+   * Loads the data from a WaveFront *.obj file, creating a mesh to render
+   * in addition to setting the correct OpenGL draw mode
+   */
+  unsigned char LoadFromFile(std::string filename);
 
-	void UniformScale(float factor);
-	void SetPosition(glm::vec3 pos);
-  void Rotation(glm::vec3 eulerAngles);
+  /*
+   * Does nothing (yet)
+   */
+  unsigned char PostLoad();
 
-	virtual void GenerateColor(glm::vec4 const & colorStored);
-	
-	static void BindShader(Shader* s);
+  /*
+   * Sets the Mesh of this renderable to the given Mesh
+   */
+  void SetMesh(Mesh *m);
 
-  MatrixObject *Matrix() const;
+  /*
+   * Sets the color of the NEXT renderable to call GenerateColors(), i.e. PostLoad()
+   */
+  static unsigned char Color(glm::vec4 const & color);
+
+  /*
+   * Sets the draw mode of this renderable to the specified mode
+   */
+  unsigned char DrawMode(GLenum mode);
+
+  static void UseShader(Shader* shader);
+
+  /*
+   * Copies data from the CPU and pushes it to the GPU
+   */
+  void Render();
+
+  /*
+   * Returns the Mesh object that the renderable draws
+   */
+  Mesh const * GetMesh() const;
+
+  /*
+   * Returns the color of the renderable
+   */
+  glm::vec4 const * Color() const;
 };
+

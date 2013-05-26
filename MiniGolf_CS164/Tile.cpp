@@ -1,106 +1,142 @@
 #include "Tile.h"
-#include "Renderable.h"
+#include "CommonUtils.h"
+#include "Ball.h"
 
-#include <glm\gtx\intersect.hpp>
+#include <glm\glm.hpp>
 
-void Tile::TileInit()
+#include <glm\gtc\matrix_inverse.hpp>
+
+unsigned char Tile::ComputeXZPlane(glm::vec3 const & up)
 {
-	edges = vertices;
-	neighbors = new unsigned short[vertices];
-  _slope = new glm::vec3(0.f, 0.f, 0.f);
-}
+  glm::vec3 n = _surface->GetMesh()->NormalData().at(0);
 
-bool Tile::SetNeighbor(unsigned short edgeId, unsigned short neighborTileId)
-{
-	if (edgeId < edges)
-	{
-		neighbors[edgeId] = neighborTileId;
-		return true;
-	}
-	return false;
-}
-
-void Tile::Finalize()
-{
-	// check each neighbor
-	for (unsigned int i = 0; i < vertices; i++)
-	{
-		// do we need to make a border?
-		if (neighbors[i] <= 0)
-		{
-			// need to make 4 vertices, in CCW order, from two base vertices
-			// and two vertices above that
-			glm::vec3* border = new glm::vec3[4];
-			border[3] = vertexData[i];
-			border[2] = vertexData[i + 1 == vertices ? 0 : i + 1];
-			border[1] = vertexData[i + 1 == vertices ? 0 : i + 1];
-			border[1].y += .25f;
-			border[0] = vertexData[i];
-			border[0].y += .25f;
-
-			Renderable *r = new Renderable;
-			if (!r->Init(border, 4))
-			{
-				// log error
-			}
-
-			r->GenerateColor(glm::vec4(1.f, .0f, .0f, 1.f));
-			borders.push_back(r);
-		}
-	}
-
-  ComputeSlope(glm::vec3(0.f, 1.f, 0.f));
-}
-
-void Tile::ComputeSlope(const glm::vec3 up)
-{
-  if (up == normalData[0])
+  if (n == up)
   {
-    *_slope = glm::vec3(1.f, 0.f, 0.f);
+    _xaxis = new glm::vec3(1.f, 0.f, 0.f);
+    _zaxis = new glm::vec3(0.f, 0.f, 1.f);
+    return STATUS_OK;
   }
-  else
+
+  _xaxis = new glm::vec3(glm::cross(n, up));
+  _zaxis = new glm::vec3(glm::cross(n, *_xaxis));
+
+  return STATUS_OK;
+}
+
+unsigned char Tile::Initialize()
+{
+  _tileBounds = new std::vector<Mesh*>;
+  _tileWalls = new std::vector<Renderable*>;
+
+  return STATUS_OK;
+}
+
+unsigned char Tile::DeInitialize()
+{
+  Delete(&_surface);
+  Delete(&_neighbors);
+  Delete(&_tileWalls);
+  Delete(&_tileBounds);
+  Delete(&_xaxis);
+  Delete(&_zaxis);
+
+  return STATUS_OK;
+}
+
+unsigned char Tile::SetRenderable(Renderable *renderable)
+{
+  _surface = renderable;
+
+  return STATUS_OK;
+}
+
+unsigned char Tile::SetNeighbors(std::vector<Tile*> *neighbors)
+{
+  _neighbors = neighbors;
+
+  return STATUS_OK;
+}
+
+unsigned char Tile::PostLoad()
+{
+  // All created walls are going to be this color 
+  Renderable::Color(glm::vec4(1.f, 0.f, 0.f, 1.f));
+
+  std::vector<glm::vec3> vertices = _surface->GetMesh()->VertexData();
+
+  unsigned int neighbors = _neighbors->size();
+  for (unsigned int i = 0; i < neighbors; i++)
   {
-    *_slope = glm::normalize(glm::cross(normalData[0], glm::cross(up, normalData[0])));
+    // Create the Mesh: we need it when either a physical or imaginary wall exists
+    const glm::vec3 *vb1, *vb2;
+
+    vb1 = &vertices.at(i);
+    vb2 = &vertices.at(i + 1 == neighbors ? 0 : i + 1);
+
+    Mesh *m = Mesh::VerticalQuad(*vb1, *vb2);
+    m->PostLoad();
+
+    if (_neighbors->at(i))
+    {
+      // If here, then another tile borders this tile on this particular edge. Imaginary wall, push and be done.
+      _tileBounds->push_back(m);
+      _tileWalls->push_back(0);
+    }
+    else
+    {
+      // If here, then no tile borders this tile on this particular edge. Real wall, create the Renderable, push, and be done.
+      Renderable *r = new Renderable;
+      r->Initialize();
+      r->SetMesh(m);
+      r->PostLoad();
+
+      _tileBounds->push_back(0);
+      _tileWalls->push_back(r);
+    }
   }
+
+  if (ComputeXZPlane(glm::vec3(0.f, 1.f, 0.f)) != STATUS_OK)
+  {
+    return 0x2;
+  }
+
+  return STATUS_OK;
 }
 
-// This assumes that the normal of the tile is the same for every
-// triangle in the tile
-glm::vec3 *Tile::Normal() const
+std::vector<Renderable*> *Tile::RealWalls()
 {
-  return &normalData[0];
+  return _tileWalls;
 }
 
-glm::vec3 *Tile::FirstVertex(unsigned int tri) const
+std::vector<Mesh*> *Tile::FakeWalls()
 {
-  return &vertexData[tri * 3];
+  return _tileBounds;
 }
 
-unsigned int Tile::TriangleCount() const
+// Tick shouldn't do anything (yet)
+unsigned char Tile::Tick(double t)
 {
-  return indices / 3;
+
+  return STATUS_OK;
 }
 
-// Move this into the renderable bro. check to see if it collides
-// with the floor of the tile. if it doesnt: figure out which imaginary
-// bound it has crossed and change tiles accordingly.
-// with imaginary bounds of the tile, real bounds of the tile,
-
-void Tile::RenderBorders(Camera* c)
+unsigned char Tile::Render(Camera *camera, Shader *s)
 {
-	for (std::vector<Renderable*>::iterator it = borders.begin(); it != borders.end(); ++it)
-	{
-		(*it)->Render(c);
-	}
-}
+  glUniformMatrix4fv(s->mat_modelTransform, 1, GL_FALSE, (GLfloat*) &glm::mat4());
 
-void Tile::DeInit()
-{
-	if (neighbors) delete neighbors;
-	for (std::vector<Renderable*>::iterator it = borders.begin(); it != borders.end(); ++it)
-	{
-		delete *it;
-	}
+  glm::mat3 normalMat = glm::inverseTranspose(glm::mat3(*camera->Matrix()));
+	glUniformMatrix3fv(s->mat_normal, 1, GL_FALSE, (GLfloat*) &normalMat);
 
-	Renderable::DeInit();
+  std::vector<Renderable*>::iterator it = _tileWalls->begin(), end = _tileWalls->end();
+  for (; it != end; ++it)
+  {
+    if (*it)
+    {
+      (*it)->Render();
+    }
+  }
+
+  _surface->Render();
+
+  return STATUS_OK;
 }

@@ -81,45 +81,37 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ArcballCamera.cpp" />
+    <ClCompile Include="Ball.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="FreelookCamera.cpp" />
     <ClCompile Include="GameTimer.cpp" />
-    <ClCompile Include="Golfball.cpp" />
     <ClCompile Include="Kengine.cpp" />
-    <ClCompile Include="Level.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MatrixObject.cpp" />
     <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="Moveable.cpp" />
-    <ClCompile Include="NewLevel.cpp" />
-    <ClCompile Include="NewRenderable.cpp" />
-    <ClCompile Include="NewTile.cpp" />
-    <ClCompile Include="Projection.cpp" />
+    <ClCompile Include="Level.cpp" />
     <ClCompile Include="Renderable.cpp" />
-    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Tile.cpp" />
+    <ClCompile Include="Projection.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="UserInput.cpp" />
     <ClCompile Include="VertexObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ArcballCamera.h" />
+    <ClInclude Include="Ball.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonUtils.h" />
     <ClInclude Include="FreelookCamera.h" />
     <ClInclude Include="GameTimer.h" />
-    <ClInclude Include="Golfball.h" />
     <ClInclude Include="Kengine.h" />
-    <ClInclude Include="Level.h" />
     <ClInclude Include="MatrixObject.h" />
     <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Moveable.h" />
-    <ClInclude Include="NewLevel.h" />
-    <ClInclude Include="NewRenderable.h" />
-    <ClInclude Include="NewTile.h" />
-    <ClInclude Include="Projection.h" />
+    <ClInclude Include="Level.h" />
     <ClInclude Include="Renderable.h" />
-    <ClInclude Include="Shader.h" />
     <ClInclude Include="Tile.h" />
+    <ClInclude Include="Projection.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="UserInput.h" />
     <ClInclude Include="VertexObject.h" />
   </ItemGroup>

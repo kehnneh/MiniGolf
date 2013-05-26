@@ -1,53 +1,46 @@
 #include "Level.h"
 #include "Renderable.h"
-#include "Camera.h"
-#include "Shader.h"
+#include "MatrixObject.h"
 
-void Level::DeInit()
+#include <fstream>
+
+using namespace std;
+
+/// Utilities
+#include "CommonUtils.h"
+
+unsigned char Level::Initialize()
 {
-	for (unsigned int i = 0; i < tiles.size(); i++)
-	{
-		if (tiles[i])
-		{
-			delete tiles[i];
-		}
-	}
+  _tiles = new vector<Tile*>;
+  _ambient = new glm::vec4;
+  _lightSourceDirection = new glm::vec3;
+
+  return STATUS_OK;
 }
 
-void Level::Render(Camera* camera, Shader* shader)
-{	
-	for (std::vector<Renderable*>::iterator it = others.begin(); it != others.end(); ++it)
-	{
-		(*it)->Tick();
-	}
+unsigned char Level::DeInitialize()
+{
+  Delete(&_tiles);
+  Delete(&_ambient);
+  Delete(&_lightSourceDirection);
 
-  _ball->Tick(0.0);
-  _ball->Render(camera);
-
-  glUniform4fv(shader->ambient, 1, (GLfloat*) &ambientLight);
-	glUniform3fv(shader->sun, 1, (GLfloat*) &lightDir);
-
-	for (std::vector<Renderable*>::iterator it = tiles.begin(); it != tiles.end(); ++it)
-	{
-		(*it)->Render(camera);
-		((Tile*)(*it))->RenderBorders(camera);
-	}
-
-	for (std::vector<Renderable*>::iterator it = others.begin(); it != others.end(); ++it)
-	{
-		(*it)->Render(camera);
-	}
+  return STATUS_OK;
 }
 
-bool Level::Init(std::string filename)
+// IMPORTANT: Tiles in the level filed are specified in sequential order!
+// accumulate neighbor lists of unsigned ints, then search the accumulated Tiles to extract their pointers
+unsigned char Level::LoadFromFile(string filename)
 {
-	std::ifstream fin(filename.c_str());
+  ifstream fin(filename.c_str());
 	char c;
 	unsigned short id, edges;
+  vector<vector<unsigned int> *> neighborIntList;
+
+  glm::vec3 teePos, cupPos;
 
 	if(fin.fail()) {
 		// Log failure to open file
-		return false;
+		return 0x2;
 	}
 
 	fin.get(c);
@@ -64,76 +57,101 @@ bool Level::Init(std::string filename)
 				fin.get(c); fin.get(c); // chomp the 'le'
 
 				fin >> id;
-				Tile* r = new Tile(id);
+        Mesh* m = new Mesh;
+        m->Initialize();
 
 				fin >> edges;
-				glm::vec3* vertData = new glm::vec3[edges];
+        vector<glm::vec3> *vertices = new vector<glm::vec3>;
 
-				// Read vertices from the file and push to the Tile's vertex array
+				// Read the vertices of the Mesh: Tile's are NOT loaded through the *.obj format
 				for(int i = 0; i < edges; i++)
 				{
-					fin >> vertData[i].x
-						>> vertData[i].y
-						>> vertData[i].z;
+          glm::vec3 vertex;
+					fin >> vertex.x >> vertex.y >> vertex.z;
+          vertices->push_back(vertex);
 				}
 
-				r->Init(vertData, edges);
-				r->TileInit();
+        m->LoadFromData(vertices);
+        m->PostLoad();
 
-				// Here, we're using id for the neighbor's id
+        Renderable::Color(glm::vec4(0.f, 1.f, 0.f, 1.f));
+        Renderable *renderable = new Renderable;
+        renderable->Initialize();
+        renderable->SetMesh(m);
+        renderable->PostLoad();
+
+        Tile* tile = new Tile;
+        tile->Initialize();
+        tile->SetRenderable(renderable);
+
+        _tiles->push_back(tile);
+
+        // Acquire a list of unsigned ints of the neighbors from the file. To be sorted through later
+        vector<unsigned int> *neighbors = new vector<unsigned int>;
 				for (int i = 0; i < edges; i++)
 				{
 					fin >> id;
-					if (!r->SetNeighbor(i, id))
-					{
-						// Log error
-						return false;
-					}
+					neighbors->push_back(id);
 				}
-
-				r->Finalize();
-
-				tiles.push_back(r);
+        
+        neighborIntList.push_back(neighbors);
 			}
 			else if (c == 'e') // Is the word 'tee'?
 			{
 				fin.get(c); // chomp the 'e'
-				fin >> teeId >> teePos.x >> teePos.y >> teePos.z;
+				fin >> _tee >> teePos.x >> teePos.y >> teePos.z;
 
-				Renderable* r = new Renderable;
-				glm::vec3* vertData = new glm::vec3[4];
+        Mesh *m = new Mesh;
+        m->Initialize();
 
-				vertData[3].x = teePos.x + 0.1f;
-				vertData[3].y = teePos.y + 0.01f;
-				vertData[3].z = teePos.z + 0.1f;
+        vector<glm::vec3> *vertices = new vector<glm::vec3>;
 
-				vertData[2].x = teePos.x - 0.1f;
-				vertData[2].y = teePos.y + 0.01f;
-				vertData[2].z = teePos.z + 0.1f;
+        vertices->push_back(teePos + glm::vec3(.1f, .01f, .1f));
+        vertices->push_back(teePos + glm::vec3(-.1f, .01f, .1f));
+        vertices->push_back(teePos + glm::vec3(-.1f, .01f, -.1f));
+        vertices->push_back(teePos + glm::vec3(.1f, .01f, -.1f));
 
-				vertData[1].x = teePos.x - 0.1f;
-				vertData[1].y = teePos.y + 0.01f;
-				vertData[1].z = teePos.z - 0.1f;
+        m->LoadFromData(vertices);
+        m->PostLoad();
 
-				vertData[0].x = teePos.x + 0.1f;
-				vertData[0].y = teePos.y + 0.01f;
-				vertData[0].z = teePos.z - 0.1f;
+        Renderable *renderable = new Renderable;
+        renderable->Initialize();
+        renderable->SetMesh(m);
+        Renderable::Color(glm::vec4(1.f, 1.f, 1.f, 1.f));
+        renderable->PostLoad();
 
-				if (!r->Init(vertData, 4))
-				{
-					// log error
-					return false;
-				}
-
-				r->GenerateColor(glm::vec4(.0f, .0f, .0f, 1.f));
-				others.push_back(r);
+        // Make Tee object!
 			} 
 		} // End 't' 
 		else if (c == 'c') // If we read in 'cup'...
 		{ 
+      // Create a cup object
 			fin.get(c); fin.get(c); // Chomp the 'up'
-			fin >> cupId >> cupPos.x >> cupPos.y >> cupPos.z;
+			fin >> _cup >> cupPos.x >> cupPos.y >> cupPos.z;
 
+      Mesh *m = new Mesh;
+      m->Initialize();
+
+      vector<glm::vec3> *vertices = new vector<glm::vec3>;
+
+			//Renderable* r = new Renderable;
+			//glm::vec3* vertData = new glm::vec3[4];
+      vertices->push_back(cupPos + glm::vec3(.1f, .01f, .1f));
+      vertices->push_back(cupPos + glm::vec3(-.1f, .01f, .1f));
+      vertices->push_back(cupPos + glm::vec3(-.1f, .01f, -.1f));
+      vertices->push_back(cupPos + glm::vec3(.1f, .01f, -.1f));
+
+      m->LoadFromData(vertices);
+      m->PostLoad();
+
+      Renderable *renderable = new Renderable;
+      renderable->Initialize();
+      renderable->SetMesh(m);
+      Renderable::Color(glm::vec4(0.f, 0.f, 0.f, 1.f));
+      renderable->PostLoad();
+      // Make cup object!
+
+      /*
 			Renderable* r = new Renderable;
 			glm::vec3* vertData = new glm::vec3[4];
 
@@ -156,28 +174,82 @@ bool Level::Init(std::string filename)
 			if (!r->Init(vertData, 4))
 			{
 				// log error
-				return false;
+				return 0x10;
 			}
 
 			r->GenerateColor(glm::vec4(.0f, .0f, .0f, 1.f));
 			others.push_back(r);
+      */
 		} // End 'cup'
 		fin.get(c);
 	}
 
 	fin.close();
 
-	// Load the golf ball!
-  _ball = new Golfball;
-  
-  if (!_ball->Init())
+  unsigned int numTiles = neighborIntList.size();
+  for (unsigned int i = 0; i < numTiles; i++)
   {
-    return false;
+    unsigned int numNeighbors = neighborIntList.at(i)->size();
+    vector<Tile*> *neighbors = new vector<Tile*>;
+    for (unsigned int j = 0; j < numNeighbors; j++)
+    {
+      unsigned int tileid = neighborIntList.at(i)->at(j);
+      neighbors->push_back(tileid == 0 ? 0 : _tiles->at(tileid - 1));
+    }
+    _tiles->at(i)->SetNeighbors(neighbors);
+    _tiles->at(i)->PostLoad();
   }
-  _ball->Position(teePos + glm::vec3(0.f, 0.05f, 0.f));
-  _ball->Scale(0.05f);
-  _ball->SetTile((Tile *)tiles[teeId]);
 
-	return true;
+  Renderable *ballobj = new Renderable;
+  Renderable::Color(glm::vec4(1.f, 1.f, 1.f, 1.f));
+  ballobj->Initialize();
+  ballobj->LoadFromFile("Models/golfball.obj");
+  ballobj->PostLoad();
+
+  _ball = new Ball;
+  _ball->Initialize();
+  _ball->CurrentTile(_tiles->at(_tee));
+  _ball->SetRenderable(ballobj);
+
+  MatrixObject* ballMat = _ball->Matrix();
+  ballMat->Position(teePos + glm::vec3(0.f, .05f, 0.f));
+  ballMat->Scale(0.05);
+
+	return STATUS_OK;
 }
 
+unsigned char Level::PostLoad()
+{
+  // Make the golfball and put it in the tile with the tee!
+
+  _lightSourceDirection = &glm::vec3(-1.f, 1.f, -1.f);
+  _ambient = &glm::vec4(.2f, .2f, .2f, 1.f);
+
+  return STATUS_OK; // double check the values of the above vecNs
+}
+
+unsigned char Level::Tick(double t)
+{
+  _ball->Tick(t);
+
+  return STATUS_OK;
+}
+
+unsigned char Level::Render(Camera *camera, Shader *shader)
+{
+  glUniform4fv(shader->ambient, 1, (GLfloat*) _ambient);
+	glUniform3fv(shader->sun, 1, (GLfloat*) _lightSourceDirection);
+  glUniformMatrix4fv(shader->mat_modelTransform, 1, GL_FALSE, (GLfloat *) &glm::mat4());
+
+  vector<Tile*>::iterator it = _tiles->begin(), end = _tiles->end();
+  
+  for (; it != end; ++it)
+  {
+    (*it)->Render(camera, shader);
+  }
+
+  // Render the ball, tee, and hole
+  _ball->Render(camera, shader);
+
+  return STATUS_OK;
+}

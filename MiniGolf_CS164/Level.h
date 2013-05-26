@@ -1,37 +1,60 @@
 #pragma once
 
-#include <fstream>
-#include <iostream>
-#include <string>
 #include <vector>
+#include <string>
+
 #include "Tile.h"
 #include "Camera.h"
-#include "Golfball.h"
+#include "Ball.h"
 
 class Level
 {
 private:
-	std::vector<Renderable*> tiles;
-	std::vector<Renderable*> others;
-	unsigned short teeId, cupId;
-	glm::vec3 teePos, cupPos, lightDir;
-	glm::vec4 ambientLight;
+  // This needs to be Tile*
+  std::vector<Tile*> *_tiles;
 
-  Golfball *_ball;
+  glm::vec3 *_lightSourceDirection;
+  glm::vec4 *_ambient;
+
+  unsigned short _tee, _cup;
+
+  Ball *_ball;
 
 public:
-	Level()
-		: lightDir(glm::vec3(-1.f, 1.f, -1.f)),
-		  ambientLight(glm::vec4(.2f, .2f, .2f, 1.f)),
-      _ball(0)
-	{}
+  Level() :
+    _tiles(0),
+    _ball(0),
+    _ambient(0),
+    _lightSourceDirection(0),
+    _tee(-1),
+    _cup(-1)
+  {}
 
-	~Level()
-	{}
+  ~Level()
+  {}
 
-	void Render(Camera* camera, Shader* shader);
+  /*
+   * Allocates memory
+   */
+  unsigned char Initialize();
 
-	bool Init(std::string filename);
-	void DeInit();
+  /*
+   * Frees memory
+   */
+  unsigned char DeInitialize();
+
+  /*
+   * Loads the level from the specified level file. Populates _tiles
+   */
+  unsigned char LoadFromFile(std::string filename);
+
+  /*
+   * Post-Initialization data assignments
+   */
+  unsigned char PostLoad();
+
+  unsigned char Tick(double t);
+
+  unsigned char Render(Camera *camera, Shader *shader);
 };
 

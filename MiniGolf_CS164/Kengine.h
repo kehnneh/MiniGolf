@@ -1,11 +1,10 @@
 #pragma once
 
 #include "Camera.h"
-#include "NewLevel.h"
+#include "Level.h"
 
 class UserInput;
 class Shader;
-class Level;
 class Projection;
 class GameTimer;
 
@@ -24,22 +23,21 @@ public:
 
 	Shader *shader;
 
-  NewLevel *LEVEL;
+  Level *LEVEL;
 	UserInput *userInput;
 	Projection *_projection;
 	Camera *c[2];
-	Level *level;
 
 	Kengine() :
       shader(0),
 		  userInput(0),
 #pragma warning( suppress: 4351 )
       c(),
-		  level(0),
 		  activeCamera(0),
       _projection(0),
       _timer(0)
 	{}
+
 	~Kengine()
 	{}
 

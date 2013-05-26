@@ -83,16 +83,16 @@ unsigned char Mesh::LoadFromData(std::vector<glm::vec3> *vertices)
 
 unsigned char Mesh::PostLoad()
 {
+  if (GenerateIndices() != STATUS_OK)
+  {
+    return 0x8;
+  }
+
   if (GenerateNormals() != STATUS_OK)
   {
     return 0x2;
   }
-  /*
-  if (GenerateColors() != STATUS_OK)
-  {
-    return 0x4;
-  }
-  */
+
   if (GenerateTriangles() != STATUS_OK)
   {
     return 0x4;
@@ -101,7 +101,7 @@ unsigned char Mesh::PostLoad()
   return STATUS_OK;
 }
 
-unsigned char Mesh::GenerateTriangles()
+unsigned char Mesh::GenerateIndices()
 {
   unsigned int indices = _indexData->size();
   if (indices == 0)
@@ -121,6 +121,14 @@ unsigned char Mesh::GenerateTriangles()
       _indexData->push_back(index);
     }
   }
+
+  return STATUS_OK;
+}
+
+unsigned char Mesh::GenerateTriangles()
+{
+  unsigned int indices = _indexData->size();
+  
 
   for (unsigned int v = 0; v < indices; v += 3)
   {
@@ -147,7 +155,8 @@ unsigned char Mesh::GenerateNormals()
 
   for (unsigned int i = 0; i < vertices; i++)
   {
-    _normalData->push_back(glm::vec3(0.f, 0.f, 0.f));
+    glm::vec3 *vec = new glm::vec3;
+    _normalData->push_back(*vec);
   }
 
   unsigned int indices = _indexData->size();

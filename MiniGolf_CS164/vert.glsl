@@ -6,7 +6,7 @@ uniform mat4 transform; // models transform
 uniform mat4 proj; // Projection matrix
 uniform mat3 normalMat; // Normal matrix
 uniform vec3 L_p; // Light position
-uniform vec3 eye; // eye position
+//uniform vec3 Eye; // eye position
 uniform vec4 ambient; // ambient light intensity
 
 //input variables from host
@@ -24,9 +24,10 @@ out vec4 frag_color;
 void main() {
     mat4 modelView = camera * transform;
 
+	vec3 eye = -camera[3].xyz * mat3(camera);
+	
     vec4 posT = modelView * vec4(pos, 1.0);
     
-	//L = normalize(L_p); //normalize(camera * vec4(L_p, 1.0)).xyz;
     L = normalize(modelView * vec4(L_p, 1.0)).xyz;
 
     V = (modelView * vec4(eye, 1.0)).xyz;

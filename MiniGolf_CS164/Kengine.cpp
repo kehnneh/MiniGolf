@@ -3,7 +3,6 @@
 #include "UserInput.h"
 #include "CommonUtils.h"
 #include "Camera.h"
-#include "Level.h"
 #include "Projection.h"
 #include "ArcballCamera.h"
 #include "FreelookCamera.h"
@@ -31,7 +30,7 @@ void display()
   // Draw all 3D-placed objects
 	glEnable(GL_DEPTH_TEST);
 
-	kengine->level->Render(kengine->c[kengine->activeCamera], kengine->shader);
+  kengine->LEVEL->Render(kengine->c[kengine->activeCamera], kengine->shader);
 
   // Time to draw the HUD!
   glDisable(GL_DEPTH_TEST);
@@ -61,6 +60,8 @@ void Tick(int value)
 	}
 
 	kengine->c[kengine->activeCamera]->Tick();
+
+  kengine->LEVEL->Tick(dt);
 
 	// Send new values to the shaders
 	glUniform3fv(kengine->shader->eye, 1, (GLfloat*) kengine->c[kengine->activeCamera]->GetPosition());
@@ -116,8 +117,7 @@ bool Kengine::Init(int argc, char** argv)
 	shader->Enable();
 
 	// Set the Renderable class to use the shader
-	Renderable::BindShader(shader);
-  NewRenderable::UseShader(shader);
+  Renderable::UseShader(shader);
 
 	c[0] = new FreelookCamera;
 	c[0]->Init();
@@ -135,12 +135,10 @@ bool Kengine::Init(int argc, char** argv)
 	userInput = new UserInput;
 	userInput->BindCamera(c[0]);
 
-	level = new Level;
-	level->Init(argv[1]);
-
-  LEVEL = new NewLevel;
+  LEVEL = new Level;
   LEVEL->Initialize();
   LEVEL->LoadFromFile(argv[1]);
+  LEVEL->PostLoad();
 
   _timer = new GameTimer;
   _timer->Init();

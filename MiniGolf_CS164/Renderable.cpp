@@ -1,288 +1,128 @@
-#include <fstream>
-
 #include "Renderable.h"
 #include "Shader.h"
+
+/// Utilities
 #include "CommonUtils.h"
-#include "Camera.h"
 
-#include <glm\gtx\normal.hpp>
-#include <glm\gtc\matrix_inverse.hpp>
+static Shader *__shader = 0;
 
-#define USE_FLAT_SHADING
+static glm::vec4 _color(0.f, 0.f, 0.f, 0.f);
 
-static Shader* activeShader = 0;
-
-void Renderable::DeInit()
+unsigned char Renderable::Initialize()
 {
-	Delete(&normalData);
-	Delete(&indexData);
-	Delete(&colorData);
-	Delete(&vertexData);
-  transform->DeInit();
-	Delete(&transform);
+  _colorData = new std::vector<glm::vec4>;
+  //_textureData = new std::vector<glm::vec2>;
+  //_mesh = new Mesh;
+
+  return STATUS_OK;
 }
 
-MatrixObject *Renderable::Matrix() const
+unsigned char Renderable::DeInitialize()
 {
-  return transform;
+  Delete(&_mesh);
+  //Delete(&_textureData);
+  Delete(&_colorData);
+
+  return STATUS_OK;
 }
 
-void Renderable::BindShader(Shader* shader)
+unsigned char Renderable::LoadFromFile(std::string filename)
 {
-	activeShader = shader;
+  _mesh = new Mesh;
+  _mesh->Initialize();
+
+  if (_mesh->LoadFromFile(filename) != STATUS_OK)
+  {
+    return 0x2;
+  }
+
+  _mesh->PostLoad();
+
+  return STATUS_OK;
 }
 
-void Renderable::GenerateColor(glm::vec4 const & colorStored)
+unsigned char Renderable::PostLoad()
 {
-	colorData = new glm::vec4[vertices];
+  if (GenerateColors() != STATUS_OK)
+  {
+    return 0x2;
+  }
 
-	for (unsigned int i = 0; i < vertices; i++)
-	{
-		colorData[i].r = colorStored.x;
-		colorData[i].g = colorStored.y;
-		colorData[i].b = colorStored.z;
-		colorData[i].a = 1.f;
-	}
+  return STATUS_OK;
 }
 
-void Renderable::UniformScale(float factor)
+unsigned char Renderable::GenerateColors()
 {
-	transform->Scale(factor);
+  unsigned int vertices = _mesh->VertexData().size();
+  for (unsigned int i = 0; i < vertices; i++)
+  {
+    _colorData->push_back(_color);
+  }
+
+  return STATUS_OK;
 }
 
-void Renderable::SetPosition(glm::vec3 pos)
+void Renderable::SetMesh(Mesh *m)
 {
-	transform->Position(pos);
+  _mesh = m;
 }
 
-void Renderable::Rotation(glm::vec3 eulerAngles)
+unsigned char Renderable::Color(glm::vec4 const & color)
 {
-  transform->Rotation(eulerAngles);
+  _color = color;
+
+  return STATUS_OK;
 }
 
-void Renderable::Tick()
+unsigned char Renderable::DrawMode(GLenum mode)
 {
-  transform->Tick();
+  _drawMode = mode;
+
+  return STATUS_OK;
 }
 
-// This is hacked. ifstream on Windows is piss poor
-bool FileCount(char* filename, unsigned int& vertices, unsigned int& indices)
+template <typename T>
+void Renderable::BindBuffer
+(
+  GLenum target,
+  GLuint buffer,
+  std::vector<T> const & data,
+  int size,
+  GLenum usage,
+  GLint attarr
+)
 {
-	vertices = 162;
-	indices = 960;
-	/*
-	std::ifstream fin(filename);
-	char c;
-
-	if (fin.fail())
-	{
-		return false;
-	}
-
-	fin.get(c);
-
-	while(!fin.eof())
-	{
-		if (c == 'v') vertices++;
-		else if (c == 'f') indices += 3;
-		fin.get(c);
-	}
-	
-	fin.close();
-	*/
-	return true;
+  glBindBuffer(target, buffer);
+  glBufferData(target, sizeof(float) * data.size() * size, data.data(), usage);
+  
+  if (attarr >= 0)
+  {
+    glEnableVertexAttribArray(attarr);
+    glVertexAttribPointer(attarr, size, GL_FLOAT, GL_FALSE, 0, NULL);
+  }
 }
 
-// Takes the filename of a *.obj file to load and constructs vertices, normals, and colors from it
-// Parametrize this such that the object read in can be toggled between
-// Left and Right handed systems (for DirectX and OpenGL, respectively).
-// Currently, it defaults to reading in a Right handed system, as
-// the application in question is written in OpenGL
-bool Renderable::Init(char* filename)
+void Renderable::Render()
 {
-	transform = new MatrixObject;
-  transform->Init();
+  BindBuffer(GL_ARRAY_BUFFER, __shader->vertexBuffer, _mesh->VertexData(), 3, GL_DYNAMIC_DRAW, __shader->vertex);
+  BindBuffer(GL_ARRAY_BUFFER, __shader->normalBuffer, _mesh->NormalData(), 3, GL_DYNAMIC_DRAW, __shader->normal);
+  BindBuffer(GL_ARRAY_BUFFER, __shader->colorBuffer, *_colorData, 4, GL_STATIC_DRAW, __shader->color);
+  BindBuffer(GL_ELEMENT_ARRAY_BUFFER, __shader->indexBuffer, _mesh->IndexData(), 1, GL_STATIC_DRAW, -1);
 
-	if (!FileCount(filename, vertices, indices))
-	{
-		// Couldn't load the file probably
-		return false;
-	}
-
-	std::ifstream fin;
-	char c;
-
-	fin.open(filename);
-	if (fin.fail())
-	{
-		// failure to open model file
-		// can't imagine it fails here, if it didn't fail before
-		return false;
-	}
-
-	vertexData = new glm::vec3[vertices];
-	indexData = new unsigned int[indices];
-
-	fin.get(c);
-
-	// Lol
-	unsigned int vertexIndex = 0, indexIndex = 0;
-
-	while(!fin.eof())
-	{
-		if (c == 'v')
-		{
-			fin.get(c);
-
-			if (c == ' ')
-			{
-				fin >> vertexData[vertexIndex].x >> vertexData[vertexIndex].y >> vertexData[vertexIndex].z;
-				vertexIndex++;
-			}
-		}
-		else if (c == 'f')
-		{
-			fin >> indexData[indexIndex] >> indexData[indexIndex + 1] >> indexData[indexIndex + 2];
-			indexData[indexIndex]--;
-			indexData[indexIndex + 1]--;
-			indexData[indexIndex + 2]--;
-			indexIndex += 3;
-		}
-
-		while (c != '\n' && !fin.eof())
-		{
-			fin.get(c);
-		}
-
-		fin.get(c);
-		// Read the next line (if there is one)
-	}
-
-	fin.close();
-	GenerateColor(glm::vec4(.8f, .0f, .8f, 1.f));
-	GenerateNormals();
-	return true;
+  glDrawElements(_drawMode, _mesh->IndexData().size(), GL_UNSIGNED_INT, NULL);
 }
 
-bool Renderable::Init(glm::vec3* vertData, unsigned int numVerts)
+void Renderable::UseShader(Shader* shader)
 {
-	transform = new MatrixObject;
-	transform->Init();
-
-	vertices = numVerts;
-	vertexData = vertData;
-	TriangulateVertices();
-	GenerateColor(glm::vec4(.0f, 1.f, .0f, 1.f));
-	GenerateNormals();
-	return true;
+  __shader = shader;
 }
 
-//
-// Ken thinks we should use GL_TRIANGLE_FAN
-// instead of GL_TRIANGLES
-// Ken has thought about this, and concluded that
-// GL_TRIANGLE_FAN is only applicable if every triangle
-// in the Renderable shares a common vertex
-//
-void Renderable::TriangulateVertices()
+Mesh const * Renderable::GetMesh() const
 {
-#ifdef GL_USE_TRIANGLE_FAN
-	indices = vertices;
-	indexData = new unsigned int[vertices];
-	for (unsigned int v = 0; v < vertices; v++)
-	{
-		indexData[v] = v;
-	}
-#else
-	unsigned int nextVert = 1;
-	indices = 3 * (vertices - 2);
-	indexData = new unsigned int[indices];
-	for (unsigned int v = 2; v < indices; v += 3)
-	{
-		indexData[v - 2] = 0;
-		indexData[v - 1] = nextVert;
-		indexData[v] = ++nextVert;
-	}
-#endif
+  return _mesh;
 }
 
-void Renderable::GenerateNormals()
+glm::vec4 const * Renderable::Color() const
 {
-	// NOT for TRIANGLE_FAN
-	normalData = new glm::vec3[vertices];
-	memset(normalData, 0, vertices * sizeof(glm::vec3));
-
-	for (unsigned int i = 0; i < indices; i += 3)
-	{
-    // It's a shame I didn't scour the GLM implementation sooner:
-    // theres a built-in function for this!
-    /*
-		glm::vec3 a(vertexData[indexData[i]]),
-			      b(vertexData[indexData[i + 1]]),
-				  c(vertexData[indexData[i + 2]]);
-
-		glm::vec3 result = glm::normalize(glm::cross(b - a, c - a));
-    */
-    glm::vec3 result = glm::triangleNormal(
-      vertexData[indexData[i]],
-      vertexData[indexData[i + 1]],
-      vertexData[indexData[i + 2]]
-    );
-
-		normalData[indexData[i]] += result;
-		normalData[indexData[i + 1]] += result;
-		normalData[indexData[i + 2]] += result;
-	}
-
-	for (unsigned int i = 0; i < vertices; i++)
-	{
-		normalData[i] = glm::normalize(normalData[i]);
-	}
-}
-
-void Renderable::BindVertices()
-{
-	glBindBuffer(GL_ARRAY_BUFFER, activeShader->vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices * 3, vertexData, GL_DYNAMIC_DRAW);
-	glEnableVertexAttribArray(activeShader->vertex);
-	glVertexAttribPointer(activeShader->vertex, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-}
-
-void Renderable::BindColors()
-{
-	glBindBuffer(GL_ARRAY_BUFFER, activeShader->colorBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices * 4, colorData, GL_DYNAMIC_DRAW);
-	glEnableVertexAttribArray(activeShader->color);
-	glVertexAttribPointer(activeShader->color, 4, GL_FLOAT, GL_FALSE, 0, NULL);
-}
-
-void Renderable::BindNormals()
-{
-	glBindBuffer(GL_ARRAY_BUFFER, activeShader->normalBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices * 3, normalData, GL_DYNAMIC_DRAW);
-	glEnableVertexAttribArray(activeShader->normal);
-	glVertexAttribPointer(activeShader->normal, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-}
-
-void Renderable::BindIndices()
-{
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, activeShader->indexBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GL_UNSIGNED_INT) * indices, indexData, GL_STATIC_DRAW);
-}
-
-void Renderable::Render(Camera* c)
-{
-  // Time to overload operators here such that we can use the MatrixObject class
-  // with standard algebraic operators!
-	glUniformMatrix4fv(activeShader->mat_modelTransform, 1, GL_FALSE, (GLfloat*) transform->Matrix());
-
-	glm::mat3 normalMat = glm::inverseTranspose(glm::mat3(*(transform->Matrix()) * *c->Matrix()));
-	glUniformMatrix3fv(activeShader->mat_normal, 1, GL_FALSE, (GLfloat*) &normalMat);
-
-	BindVertices();
-	BindColors();
-	BindNormals();
-	BindIndices();
-
-	glDrawElements(drawMode, indices, GL_UNSIGNED_INT, NULL);
+  return &_colorData->at(0);
 }
