@@ -72,6 +72,7 @@ unsigned char Level::LoadFromFile(string filename)
 				}
 
         m->LoadFromData(vertices);
+        m->DrawMode(GL_TRIANGLES);
         m->PostLoad();
 
         Renderable::Color(glm::vec4(0.f, 1.f, 0.f, 1.f));
@@ -112,6 +113,7 @@ unsigned char Level::LoadFromFile(string filename)
         vertices->push_back(teePos + glm::vec3(.1f, .01f, -.1f));
 
         m->LoadFromData(vertices);
+        m->DrawMode(GL_TRIANGLES);
         m->PostLoad();
 
         Renderable *renderable = new Renderable;
@@ -142,6 +144,7 @@ unsigned char Level::LoadFromFile(string filename)
       vertices->push_back(cupPos + glm::vec3(.1f, .01f, -.1f));
 
       m->LoadFromData(vertices);
+      m->DrawMode(GL_TRIANGLES);
       m->PostLoad();
 
       Renderable *renderable = new Renderable;
@@ -245,7 +248,7 @@ unsigned char Level::Render(Camera *camera, Shader *shader)
   
   for (; it != end; ++it)
   {
-    (*it)->Render(camera, shader);
+    //(*it)->Render(camera, shader);
   }
 
   // Render the ball, tee, and hole

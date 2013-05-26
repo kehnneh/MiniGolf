@@ -74,6 +74,7 @@ unsigned char Tile::PostLoad()
     vb2 = &vertices.at(i + 1 == neighbors ? 0 : i + 1);
 
     Mesh *m = Mesh::VerticalQuad(*vb1, *vb2);
+    m->DrawMode(GL_TRIANGLES);
     m->PostLoad();
 
     if (_neighbors->at(i))

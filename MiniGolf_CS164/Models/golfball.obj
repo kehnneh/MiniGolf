@@ -2,6 +2,7 @@
 # www.blender.org
 mtllib golfball.mtl
 o Icosphere
+g 4
 v 0.000000 -1.000000 -0.000000
 v 0.203181 -0.967950 0.147618
 v -0.077607 -0.967950 0.238853

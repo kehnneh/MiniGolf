@@ -1,5 +1,7 @@
 #include "Ball.h"
 
+#include "Arrow.h"
+
 #include "CommonUtils.h"
 #include <glm\gtc\matrix_inverse.hpp>
 
@@ -8,6 +10,10 @@ unsigned char Ball::Initialize()
   _velocity = new glm::vec3;
   _transform = new MatrixObject;
   _transform->Init();
+
+  Renderable::Color(glm::vec4(1.f, 1.f, 1.f, 1.f));
+  _direction = new Arrow;
+  _direction->Initialize();
 
   return STATUS_OK;
 }
@@ -47,9 +53,8 @@ unsigned char DetectChange(glm::vec3 norm, glm::vec3 pos)
   return 0x4; // ON plane
 }
 
-void Ball::Hit(glm::vec3 direction, float power)
+void Ball::Hit(float power)
 {
-  _velocity = &direction;
   _speed = power;
 }
 
@@ -79,6 +84,13 @@ MatrixObject *Ball::Matrix()
 unsigned char Ball::Tick(double t)
 {
   _transform->Tick();
+
+  _direction->Matrix()->Position(*_transform->Position());
+
+  if (_speed <= 0.f)
+  {
+    return STATUS_OK;
+  }
 
   /*
   // calculate starting position and final position
@@ -147,6 +159,7 @@ unsigned char Ball::Render(Camera *camera, Shader *shader)
 	glUniformMatrix3fv(shader->mat_normal, 1, GL_FALSE, (GLfloat*) &normalMat);
 
   _renderable->Render();
+  _direction->Render(camera, shader);
 
   return STATUS_OK;
 }

@@ -22,6 +22,16 @@ void keyboardUp(unsigned char key, int x, int y)
 	kengine->userInput->ReleaseKey(key);
 }
 
+void keyboardSpecial(int key, int x, int y)
+{
+  kengine->userInput->PressSpecialKey(key);
+}
+
+void keyboardSpecialUp(int key, int x, int y)
+{
+  kengine->userInput->ReleaseSpecialKey(key);
+}
+
 void display()
 {
 	glViewport(0, 0, 640, 480);
@@ -153,6 +163,8 @@ void Kengine::InitCallbacks()
 	glutDisplayFunc(display);
 	glutKeyboardFunc(keyboard);
 	glutKeyboardUpFunc(keyboardUp);
+  glutSpecialFunc(keyboardSpecial);
+  glutSpecialUpFunc(keyboardSpecialUp);
 	glutTimerFunc(20, Tick, 0);
 }
 

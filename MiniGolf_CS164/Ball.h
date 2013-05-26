@@ -5,6 +5,8 @@
 #include "Tile.h"
 #include "Renderable.h"
 
+class Arrow;
+
 class Ball
 {
 private:
@@ -19,6 +21,7 @@ private:
 
   // Drawing
   Renderable *_renderable;
+  Arrow *_direction;
 
 public:
   Ball() :
@@ -26,6 +29,7 @@ public:
       _tile(0),
       _velocity(0),
       _renderable(0),
+      _direction(0),
       _radius(0.f),
       _speed(0.f)
   {}
@@ -47,7 +51,7 @@ public:
 
   float DetectCollision(glm::vec3 const & pos, glm::vec3 const & endPos, const Mesh *m, float dist);
 
-  void Hit(glm::vec3 direction, float power);
+  void Hit(float power);
 
   MatrixObject *Matrix();
 

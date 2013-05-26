@@ -1,5 +1,7 @@
 #pragma once
 
+#include <gl\glew.h>
+
 /// STL includes
 #include <string>
 #include <vector>
@@ -10,7 +12,6 @@
 struct Triangle {
   glm::vec3 *vertexData[3];
   glm::vec3 *normalData[3];
-  //glm::vec4 *colorData[3];
 };
 
 class Mesh
@@ -19,8 +20,9 @@ private:
   std::vector<glm::vec3> *_vertexData;
   std::vector<glm::vec3> *_normalData;
   std::vector<unsigned int> *_indexData;
-  //std::vector<glm::vec4> *_colorData;
   std::vector<Triangle*> *_triangleData;
+
+  GLenum _drawMode;
 
   /*
    * Populates _triangleData
@@ -36,18 +38,14 @@ private:
    * Populates _indexData
    */
   unsigned char GenerateIndices();
-  /*
-   * Populates _colorData
-   */
-  //unsigned char GenerateColors();
 
 public:
   Mesh() :
       _vertexData(0),
       _normalData(0),
       _indexData(0),
-      //_colorData(0),
-      _triangleData(0)
+      _triangleData(0),
+      _drawMode(0)
   {}
 
   ~Mesh()
@@ -72,6 +70,8 @@ public:
    * Loads a mesh from the given set of vertices. Populates _vertexData
    */
   unsigned char LoadFromData(std::vector<glm::vec3> *vertices);
+
+  void SetNormalData(std::vector<glm::vec3> *normalData);
 
   /*
    * Triangulates vertices, calculates normals and colors
@@ -98,9 +98,8 @@ public:
    */
   static Mesh* VerticalQuad(glm::vec3 const & vb1, glm::vec3 const & vb2);
 
-  /*
-   * This assigns the color which GenerateColors will assign to the Mesh
-   */
-  //static void PrepareColor(glm::vec4 const & col);
+  void DrawMode(GLenum drawMode);
+
+  GLenum DrawMode();
 };
 

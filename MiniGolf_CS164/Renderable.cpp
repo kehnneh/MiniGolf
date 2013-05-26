@@ -74,13 +74,6 @@ unsigned char Renderable::Color(glm::vec4 const & color)
   return STATUS_OK;
 }
 
-unsigned char Renderable::DrawMode(GLenum mode)
-{
-  _drawMode = mode;
-
-  return STATUS_OK;
-}
-
 template <typename T>
 void Renderable::BindBuffer
 (
@@ -109,7 +102,7 @@ void Renderable::Render()
   BindBuffer(GL_ARRAY_BUFFER, __shader->colorBuffer, *_colorData, 4, GL_STATIC_DRAW, __shader->color);
   BindBuffer(GL_ELEMENT_ARRAY_BUFFER, __shader->indexBuffer, _mesh->IndexData(), 1, GL_STATIC_DRAW, -1);
 
-  glDrawElements(_drawMode, _mesh->IndexData().size(), GL_UNSIGNED_INT, NULL);
+  glDrawElements(_mesh->DrawMode(), _mesh->IndexData().size(), GL_UNSIGNED_INT, NULL);
 }
 
 void Renderable::UseShader(Shader* shader)
@@ -117,7 +110,7 @@ void Renderable::UseShader(Shader* shader)
   __shader = shader;
 }
 
-Mesh const * Renderable::GetMesh() const
+Mesh *Renderable::GetMesh()
 {
   return _mesh;
 }

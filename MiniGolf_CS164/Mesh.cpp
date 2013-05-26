@@ -11,7 +11,6 @@ unsigned char Mesh::Initialize()
   _vertexData = new std::vector<glm::vec3>;
   _normalData = new std::vector<glm::vec3>;
   _indexData = new std::vector<unsigned int>;
-  //_colorData = new std::vector<glm::vec4>;
   _triangleData = new std::vector<Triangle*>;
 
   return STATUS_OK;
@@ -20,7 +19,6 @@ unsigned char Mesh::Initialize()
 unsigned char Mesh::DeInitialize()
 {
   DeleteVectorPtrs(&_triangleData);
-  //Delete(&_colorData);
   Delete(&_indexData);
   Delete(&_normalData);
   Delete(&_vertexData);
@@ -55,12 +53,29 @@ unsigned char Mesh::LoadFromFile(std::string filename)
     }
     else if (c == 'f')
     {
-      unsigned int i;
-      for (unsigned int j = 0; j < 3; j++)
+      unsigned int i, numIndices;
+
+      switch(_drawMode)
+      {
+      case GL_TRIANGLES:
+        numIndices = 3;
+        break;
+      case GL_LINES:
+        numIndices = 2;
+        break;
+      default:
+        return 0x4;
+      }
+
+      for (unsigned int j = 0; j < numIndices; j++)
       {
         fileIn >> i;
         _indexData->push_back(--i);
       }
+    }
+    else if (c == 'g')
+    {
+      fileIn >> _drawMode;
     }
 
     while (c != '\n' && !fileIn.eof())
@@ -72,6 +87,11 @@ unsigned char Mesh::LoadFromFile(std::string filename)
   fileIn.close();
 
   return STATUS_OK;
+}
+
+void Mesh::SetNormalData(std::vector<glm::vec3> *normalData)
+{
+  _normalData = normalData;
 }
 
 unsigned char Mesh::LoadFromData(std::vector<glm::vec3> *vertices)
@@ -182,18 +202,15 @@ unsigned char Mesh::GenerateNormals()
   return STATUS_OK;
 }
 
-/*
-unsigned char Mesh::GenerateColors()
+void Mesh::DrawMode(GLenum drawMode)
 {
-  unsigned int vertices = _vertexData->size();
-  for (unsigned int i = 0; i < vertices; i++)
-  {
-    _colorData->push_back(color);
-  }
-
-  return STATUS_OK;
+  _drawMode = drawMode;
 }
-*/
+
+GLenum Mesh::DrawMode()
+{
+  return _drawMode;
+}
 
 std::vector<glm::vec3> const & Mesh::VertexData() const
 {
@@ -241,10 +258,3 @@ Mesh* Mesh::VerticalQuad(glm::vec3 const & vb1, glm::vec3 const & vb2)
 
   return m;
 }
-
-/*
-void Mesh::PrepareColor(glm::vec4 const & col)
-{
-  color = col;
-}
-*/

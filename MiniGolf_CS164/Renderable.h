@@ -21,8 +21,6 @@ private:
   
   Mesh *_mesh;
 
-  GLenum _drawMode;
-
   /*
    * Populates _colorData. Not necessary for a mesh, and not necessary if there is a texture
    * associated with the renderable.
@@ -43,8 +41,7 @@ public:
   Renderable() :
       _colorData(0),
       // _textureData(0),
-      _mesh(0),
-      _drawMode(GL_TRIANGLES)
+      _mesh(0)
   {}
 
   ~Renderable()
@@ -81,11 +78,6 @@ public:
    */
   static unsigned char Color(glm::vec4 const & color);
 
-  /*
-   * Sets the draw mode of this renderable to the specified mode
-   */
-  unsigned char DrawMode(GLenum mode);
-
   static void UseShader(Shader* shader);
 
   /*
@@ -96,7 +88,7 @@ public:
   /*
    * Returns the Mesh object that the renderable draws
    */
-  Mesh const * GetMesh() const;
+  Mesh *GetMesh();
 
   /*
    * Returns the color of the renderable

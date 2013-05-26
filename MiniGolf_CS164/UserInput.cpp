@@ -1,16 +1,19 @@
 #include <gl\freeglut.h>
 
+#include "MatrixObject.h"
 #include "UserInput.h"
 #include "Camera.h"
 
 void UserInput::Init()
 {
 	memset(&m_keys, 0, 256 * sizeof(bool));
+  memset(&m_specialKeys, 0, 256 * sizeof(bool));
 }
 
 void UserInput::DeInit()
 {
 	camera = 0;
+  _ballDirection = 0;
 }
 
 void UserInput::PressKey(unsigned char key)
@@ -23,6 +26,16 @@ void UserInput::ReleaseKey(unsigned char key)
 	m_keys[key] = false;
 }
 
+void UserInput::PressSpecialKey(unsigned char key)
+{
+  m_specialKeys[key] = true;
+}
+
+void UserInput::ReleaseSpecialKey(unsigned char key)
+{
+  m_specialKeys[key] = false;
+}
+
 bool UserInput::IsKeyPressed(unsigned char key)
 {
 	return m_keys[key];
@@ -33,6 +46,11 @@ void UserInput::BindCamera(Camera* c)
 	camera = c;
 }
 
+void UserInput::BindDirection(MatrixObject *direction)
+{
+  _ballDirection = direction;
+}
+
 void UserInput::Tick(const double dt)
 {
   float t = (float) dt;
@@ -40,6 +58,7 @@ void UserInput::Tick(const double dt)
 	{
 		glutLeaveMainLoop();
 	}
+  // Camera controls
 	else if (IsKeyPressed('q'))
 	{
 		camera->IncYaw(-1.f * _rotationSensitivity * t);
@@ -64,8 +83,6 @@ void UserInput::Tick(const double dt)
 	{
 		camera->MoveLeft(1.f * _movementSensitivity * t);
 	}
-	// Until the Camera moves along the World's X/Z plane, MoveForward is not going to work as desired
-	
 	else if (IsKeyPressed('w'))
 	{
 		camera->MoveForward(1.f * _movementSensitivity * t);
@@ -74,5 +91,13 @@ void UserInput::Tick(const double dt)
 	{
 		camera->MoveForward(-1.f * _movementSensitivity * t);
 	}
-	
+  // Ball Direction control
+  else if (m_specialKeys[GLUT_KEY_LEFT])
+  {
+    // Rotate ball direction to the left
+  }
+  else if (m_specialKeys[GLUT_KEY_RIGHT])
+  {
+    // Rotate ball direction to the right
+  }
 }
