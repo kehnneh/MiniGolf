@@ -118,16 +118,20 @@ unsigned char Ball::Tick(double t)
 
   // COLLISION DETECTION! DID WE COLLIDE INTO ANOTHER TILE?
   std::vector<Mesh*> *fakeWalls = _tile->FakeWalls();
-  std::vector<Mesh*>::iterator fit = fakeWalls->begin(), fitend = fakeWalls->end();
-  for (; fit != fitend; ++fit)
+  //std::vector<Mesh*>::iterator fit = fakeWalls->begin(), fitend = fakeWalls->end();
+  unsigned int numNeighbors = fakeWalls->size();
+  for (unsigned int n = 0; n < numNeighbors; ++n)
   {
-    if (*fit)
+    Mesh *m = fakeWalls->at(n);
+    if (m)
     {
-      float timeElapsed = DetectCollision(pos, endpos, (*fit), 0.f);
-      if (timeElapsed < t)
+      float timeElapsed = DetectCollision(pos, endpos, m, 0.f);
+      if (timeElapsed > 0.f)
       {
         // we collided, find the new tile to move to, and update the position, and velocity
-        //_tile = _tile->N
+        _tile = _tile->Neighbor(n);
+        //endpos = *_transform->Position() + ((timeElapsed * _speed) * direction);
+        break;
       }
     }
   }

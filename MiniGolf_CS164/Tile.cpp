@@ -146,3 +146,13 @@ glm::vec3 Tile::Normal()
 {
   return _surface->GetMesh()->NormalData().at(0);
 }
+
+Tile *Tile::Neighbor(unsigned int n)
+{
+  return n < _neighbors->size() ? _neighbors->at(n) : 0;
+}
+
+std::vector<Tile*> *Tile::Neighbors()
+{
+  return _neighbors;
+}

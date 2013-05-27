@@ -48,6 +48,10 @@ public:
 
   unsigned char SetNeighbors(std::vector<Tile*> *neighbors);
 
+  Tile *Neighbor(unsigned int n);
+
+  std::vector<Tile*> *Neighbors();
+
   /*
    * Initializes Meshes for the imaginary bounds between tiles and Renderables for the physical bounds
    * between the tiles and the world.
