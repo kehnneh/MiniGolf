@@ -85,8 +85,10 @@
     <ClCompile Include="Ball.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="FreelookCamera.cpp" />
+    <ClCompile Include="GameMenu.cpp" />
     <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="Kengine.cpp" />
+    <ClCompile Include="LevelManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MatrixObject.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -105,8 +107,10 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonUtils.h" />
     <ClInclude Include="FreelookCamera.h" />
+    <ClInclude Include="GameMenu.h" />
     <ClInclude Include="GameTimer.h" />
     <ClInclude Include="Kengine.h" />
+    <ClInclude Include="LevelManager.h" />
     <ClInclude Include="MatrixObject.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Level.h" />
