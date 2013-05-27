@@ -6,6 +6,7 @@
 #include "Projection.h"
 #include "ArcballCamera.h"
 #include "FreelookCamera.h"
+#include "TopDown.h"
 #include "GameTimer.h"
 #include <gl\glfw.h>
 
@@ -60,6 +61,7 @@ void Tick(int value)
 		if (kengine->activeCamera == 0)
 		{
 			kengine->activeCamera = 1;
+			std::cout << "Arcball" << std::endl;
 		}
 		else
 		{
@@ -68,10 +70,25 @@ void Tick(int value)
 		kengine->userInput->BindCamera(kengine->c[kengine->activeCamera]);
 		kengine->userInput->ReleaseKey('c');
 	}
+	else
+	if (kengine->userInput->IsKeyPressed('v'))
+	{
+		if(kengine->activeCamera == 1 || kengine->activeCamera == 0)
+		{
+			kengine->activeCamera = 2;
+			std::cout << "TopDown" << std::endl;
+		}
+		else
+		{
+			kengine->activeCamera = 0;
+		}
+		kengine->userInput->BindCamera(kengine->c[kengine->activeCamera]);
+		kengine->userInput->ReleaseKey('v');
+	}
 
 	kengine->c[kengine->activeCamera]->Tick();
 
-  kengine->LEVEL->Tick(dt);
+	kengine->LEVEL->Tick(dt);
 
 	// Send new values to the shaders
 	glUniform3fv(kengine->shader->eye, 1, (GLfloat*) kengine->c[kengine->activeCamera]->GetPosition());
@@ -127,12 +144,14 @@ bool Kengine::Init(int argc, char** argv)
 	shader->Enable();
 
 	// Set the Renderable class to use the shader
-  Renderable::UseShader(shader);
+    Renderable::UseShader(shader);
 
 	c[0] = new FreelookCamera;
 	c[0]->Init();
 	c[1] = new ArcballCamera;
 	c[1]->Init();
+	c[2] = new TopDown;
+	c[2]->Init();
 
 	_projection = new Projection;
 	_projection->Init();
@@ -145,12 +164,16 @@ bool Kengine::Init(int argc, char** argv)
 	userInput = new UserInput;
 	userInput->BindCamera(c[0]);
 
-  LEVEL = new Level;
-  LEVEL->Initialize();
-  LEVEL->LoadFromFile(argv[1]);
-  LEVEL->PostLoad();
+	LEVEL = new Level;
+	LEVEL->Initialize();
+	LEVEL->LoadFromFile(argv[1]);
+	LEVEL->PostLoad();
 
+<<<<<<< HEAD
   userInput->BindBall(LEVEL->GetBall());
+=======
+	userInput->BindDirection(LEVEL->GetBall()->DirectionMatrix());
+>>>>>>> Started TopDown, need to fix topdown rotation
 
   _timer = new GameTimer;
   _timer->Init();

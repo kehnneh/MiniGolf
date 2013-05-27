@@ -96,11 +96,14 @@
     <ClCompile Include="Arrow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameMenu.cpp">
+<ClCompile Include="GameMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LevelManager.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TopDown.cpp">
+      <Filter>Source Files\Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -155,7 +158,10 @@
     <ClInclude Include="Arrow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameMenu.h">
+	<ClInclude Include="TopDown.h">
+      <Filter>Header Files\Camera</Filter>
+    </ClInclude>
+<ClInclude Include="GameMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LevelManager.h">
