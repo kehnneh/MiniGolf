@@ -95,6 +95,7 @@
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="Projection.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="TopDown.cpp" />
     <ClCompile Include="UserInput.cpp" />
     <ClCompile Include="VertexObject.cpp" />
   </ItemGroup>
@@ -114,6 +115,7 @@
     <ClInclude Include="Tile.h" />
     <ClInclude Include="Projection.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="TopDown.h" />
     <ClInclude Include="UserInput.h" />
     <ClInclude Include="VertexObject.h" />
   </ItemGroup>

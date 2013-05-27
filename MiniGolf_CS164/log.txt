@@ -1,0 +1,2 @@
+Fragment compile log: Fragment shader was successfully compiled to run on hardware.
+
