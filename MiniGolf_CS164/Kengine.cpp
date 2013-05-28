@@ -169,11 +169,7 @@ bool Kengine::Init(int argc, char** argv)
 	LEVEL->LoadFromFile(argv[1]);
 	LEVEL->PostLoad();
 
-<<<<<<< HEAD
   userInput->BindBall(LEVEL->GetBall());
-=======
-	userInput->BindDirection(LEVEL->GetBall()->DirectionMatrix());
->>>>>>> Started TopDown, need to fix topdown rotation
 
   _timer = new GameTimer;
   _timer->Init();
