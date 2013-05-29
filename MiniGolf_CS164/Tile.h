@@ -9,6 +9,10 @@ class Ball;
 class Tile
 {
 private:
+  unsigned int _id;
+
+  std::vector<unsigned int> _neighborIds;
+
   // This is the renderable that is drawn for this tile.
   Renderable *_surface;
 
@@ -31,11 +35,14 @@ public:
     _tileBounds(0),
     _tileWalls(0),
     _xaxis(0),
-    _zaxis(0)
+    _zaxis(0),
+    _id(-1)
   {}
 
   ~Tile()
   {}
+
+  void ReadTile(char*);
 
   /*
    * _neighbors and _surface will be specifically passed into Tile instances, and are not allocated here

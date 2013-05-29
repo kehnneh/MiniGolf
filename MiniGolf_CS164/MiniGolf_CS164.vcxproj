@@ -84,6 +84,7 @@
     <ClCompile Include="Arrow.cpp" />
     <ClCompile Include="Ball.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="FileHandle.cpp" />
     <ClCompile Include="FreelookCamera.cpp" />
     <ClCompile Include="GameMenu.cpp" />
     <ClCompile Include="GameTimer.cpp" />
@@ -93,6 +94,7 @@
     <ClCompile Include="MatrixObject.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Level.cpp" />
+    <ClCompile Include="NewLevel.cpp" />
     <ClCompile Include="Renderable.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="Projection.cpp" />
@@ -107,6 +109,7 @@
     <ClInclude Include="Ball.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonUtils.h" />
+    <ClInclude Include="FileHandle.h" />
     <ClInclude Include="FreelookCamera.h" />
     <ClInclude Include="GameMenu.h" />
     <ClInclude Include="GameTimer.h" />
@@ -115,6 +118,7 @@
     <ClInclude Include="MatrixObject.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Level.h" />
+    <ClInclude Include="NewLevel.h" />
     <ClInclude Include="Renderable.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="Projection.h" />

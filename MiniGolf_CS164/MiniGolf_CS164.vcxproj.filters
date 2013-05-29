@@ -96,7 +96,7 @@
     <ClCompile Include="Arrow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-<ClCompile Include="GameMenu.cpp">
+    <ClCompile Include="GameMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LevelManager.cpp">
@@ -104,6 +104,12 @@
     </ClCompile>
     <ClCompile Include="TopDown.cpp">
       <Filter>Source Files\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="FileHandle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NewLevel.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -158,13 +164,19 @@
     <ClInclude Include="Arrow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-	<ClInclude Include="TopDown.h">
+    <ClInclude Include="TopDown.h">
       <Filter>Header Files\Camera</Filter>
     </ClInclude>
-<ClInclude Include="GameMenu.h">
+    <ClInclude Include="GameMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LevelManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FileHandle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NewLevel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

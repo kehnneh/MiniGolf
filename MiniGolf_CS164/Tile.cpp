@@ -6,6 +6,31 @@
 
 #include <glm\gtc\matrix_inverse.hpp>
 
+#include <string>
+#include <sstream>
+
+void Tile::ReadTile(char* tile)
+{
+  unsigned int edges;
+
+  std::stringstream ss(tile);
+  ss >> _id >> edges;
+
+  std::vector<glm::vec3> meshVertices(edges);
+  for (unsigned int i = 0; i < edges; i++)
+  {
+    ss >> meshVertices.at(i).x >> meshVertices.at(i).y >> meshVertices.at(i).z;
+  }
+
+  // I don't know if vector::reserve will assign values. Since vector::resize
+  // explicitly takes an initial value, I'll use that
+  _neighborIds.resize(edges, -1);
+  for (unsigned int i = 0; i < edges; i++)
+  {
+    ss >> _neighborIds.at(i);
+  }
+}
+
 unsigned char Tile::ComputeXZPlane(glm::vec3 const & up)
 {
   glm::vec3 n = _surface->GetMesh()->NormalData().at(0);

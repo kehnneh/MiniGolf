@@ -44,14 +44,14 @@ void display()
   kengine->LEVEL->Render(kengine->c[kengine->activeCamera], kengine->shader);
 
   // Time to draw the HUD!
-  glDisable(GL_DEPTH_TEST);
+  //glDisable(GL_DEPTH_TEST);
 
 	glutSwapBuffers();
 }
 
 void Tick(int value)
 {
-  double dt = kengine->_timer->TickTime();
+  double dt = 0.02;//kengine->_timer->TickTime();
 	kengine->_projection->Tick();
 
 	// Handle user input
@@ -70,6 +70,7 @@ void Tick(int value)
 		kengine->userInput->BindCamera(kengine->c[kengine->activeCamera]);
 		kengine->userInput->ReleaseKey('c');
 	}
+  /*
 	else
 	if (kengine->userInput->IsKeyPressed('v'))
 	{
@@ -84,7 +85,7 @@ void Tick(int value)
 		}
 		kengine->userInput->BindCamera(kengine->c[kengine->activeCamera]);
 		kengine->userInput->ReleaseKey('v');
-	}
+	}*/
 
 	kengine->c[kengine->activeCamera]->Tick();
 
@@ -129,10 +130,10 @@ bool Kengine::Init(int argc, char** argv)
 	InitGlut(argc, argv);
 
   // Initialize glfw for its timer ;D
-  if (glfwInit() == GL_FALSE)
-  {
-    return false;
-  }
+  //if (glfwInit() == GL_FALSE)
+  //{
+  //  return false;
+  //}
 
 	// TODO: Setup GLUI
 
@@ -169,14 +170,10 @@ bool Kengine::Init(int argc, char** argv)
 	LEVEL->LoadFromFile(argv[1]);
 	LEVEL->PostLoad();
 
-<<<<<<< HEAD
   userInput->BindBall(LEVEL->GetBall());
-=======
-	userInput->BindDirection(LEVEL->GetBall()->DirectionMatrix());
->>>>>>> Started TopDown, need to fix topdown rotation
 
-  _timer = new GameTimer;
-  _timer->Init();
+  //_timer = new GameTimer;
+  //_timer->Init();
 
 	InitCallbacks();
 
