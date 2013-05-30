@@ -1,0 +1,1 @@
+I propose to implement SIMD techniques, such as the ones found as part of the DirectXMath library, for usage in both orientation and math. These techniques may require their own memory allocation methods to function properly.
