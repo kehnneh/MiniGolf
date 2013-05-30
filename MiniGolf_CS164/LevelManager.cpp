@@ -43,7 +43,7 @@ unsigned char LevelManager::Initialize()
 
   __levelMgrFuncMap["course"] = &LevelManager::InitializeCourse;
   __levelMgrFuncMap["begin_hole"] = &LevelManager::CreateLevel;
-  __levelMgrFuncMap["end_hold"] = &LevelManager::FinalizeLevel;
+  __levelMgrFuncMap["end_hole"] = &LevelManager::FinalizeLevel;
 
   __levelFuncMap["name"] = &NewLevel::ReadName;
   __levelFuncMap["par"] = &NewLevel::ReadPar;

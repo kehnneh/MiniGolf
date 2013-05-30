@@ -27,7 +27,7 @@ void NewLevel::ReadName(char* name)
 void NewLevel::ReadPar(char* par)
 {
 #pragma warning( suppress : 4996 )
-  if (sscanf(par, "%d", _par) < 1)
+  if (sscanf(par, "%d", &_par) < 1)
   {
     // What happened?
   }
@@ -40,6 +40,7 @@ void NewLevel::ReadTile(char* tile)
 
   t->ReadTile(tile);
 
+  _tiles.push_back(t);
   /*
   unsigned int edges;
   char data[1024];

@@ -16,11 +16,21 @@ void Tile::ReadTile(char* tile)
   std::stringstream ss(tile);
   ss >> _id >> edges;
 
-  std::vector<glm::vec3> meshVertices(edges);
+  std::vector<glm::vec3> *meshVertices = new std::vector<glm::vec3>(edges);
   for (unsigned int i = 0; i < edges; i++)
   {
-    ss >> meshVertices.at(i).x >> meshVertices.at(i).y >> meshVertices.at(i).z;
+    ss >> meshVertices->at(i).x >> meshVertices->at(i).y >> meshVertices->at(i).z;
   }
+
+  Mesh *m = new Mesh;
+  m->LoadFromData(meshVertices);
+  m->DrawMode(GL_TRIANGLES);
+
+  Renderable::Color(glm::vec4(0.f, 1.f, 0.f, 1.f));
+  _surface = new Renderable;
+  _surface->Initialize();
+  _surface->SetMesh(m);
+  _surface->PostLoad();
 
   // I don't know if vector::reserve will assign values. Since vector::resize
   // explicitly takes an initial value, I'll use that
