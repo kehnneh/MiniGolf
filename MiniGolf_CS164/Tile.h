@@ -11,7 +11,7 @@ class Tile
 private:
   unsigned int _id;
 
-  std::vector<unsigned int> _neighborIds;
+  std::vector<unsigned int> *_neighborIds;
 
   // This is the renderable that is drawn for this tile.
   Renderable *_surface;
@@ -32,6 +32,7 @@ public:
   Tile() :
     _surface(0),
     _neighbors(0),
+    _neighborIds(0),
     _tileBounds(0),
     _tileWalls(0),
     _xaxis(0),
@@ -54,6 +55,8 @@ public:
   unsigned char SetRenderable(Renderable *renderable);
 
   unsigned char SetNeighbors(std::vector<Tile*> *neighbors);
+
+  std::vector<unsigned int> *GetNeighborIds();
 
   Tile *Neighbor(unsigned int n);
 

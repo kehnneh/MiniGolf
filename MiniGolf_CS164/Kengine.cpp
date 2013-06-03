@@ -8,6 +8,9 @@
 #include "FreelookCamera.h"
 #include "TopDown.h"
 #include "GameTimer.h"
+#include "LevelManager.h"
+#include "Renderable.h"
+
 #include <gl\glfw.h>
 
 static Kengine *kengine = 0;
@@ -41,7 +44,8 @@ void display()
   // Draw all 3D-placed objects
 	glEnable(GL_DEPTH_TEST);
 
-  kengine->LEVEL->Render(kengine->c[kengine->activeCamera], kengine->shader);
+  //kengine->LEVEL->Render(kengine->c[kengine->activeCamera], kengine->shader);
+  kengine->_levelMgr->Render(kengine->c[kengine->activeCamera], kengine->shader);
 
   // Time to draw the HUD!
   //glDisable(GL_DEPTH_TEST);
@@ -89,7 +93,8 @@ void Tick(int value)
 
 	kengine->c[kengine->activeCamera]->Tick();
 
-	kengine->LEVEL->Tick(dt);
+  kengine->_levelMgr->Tick(dt);
+	//kengine->LEVEL->Tick(dt);
 
 	// Send new values to the shaders
 	glUniform3fv(kengine->shader->eye, 1, (GLfloat*) kengine->c[kengine->activeCamera]->GetPosition());
@@ -145,7 +150,7 @@ bool Kengine::Init(int argc, char** argv)
 	shader->Enable();
 
 	// Set the Renderable class to use the shader
-    Renderable::UseShader(shader);
+  Renderable::UseShader(shader);
 
 	c[0] = new FreelookCamera;
 	c[0]->Init();
@@ -165,13 +170,24 @@ bool Kengine::Init(int argc, char** argv)
 	userInput = new UserInput;
 	userInput->BindCamera(c[0]);
 
+  _levelMgr = new LevelManager;
+  _levelMgr->Initialize(); // can't fail yet
+  if (_levelMgr->LoadLevels() != 0x1)
+  {
+    return false;
+  }
+  _levelMgr->_uin = userInput;
+  _levelMgr->PlayLevel(0);
+  userInput->SetLevelManager(_levelMgr);
+
+  /*
 	LEVEL = new Level;
 	LEVEL->Initialize();
 	LEVEL->LoadFromFile(argv[1]);
 	LEVEL->PostLoad();
 
   userInput->BindBall(LEVEL->GetBall());
-
+  */
   //_timer = new GameTimer;
   //_timer->Init();
 

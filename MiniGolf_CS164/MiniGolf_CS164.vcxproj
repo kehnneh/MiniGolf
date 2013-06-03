@@ -96,6 +96,7 @@
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="NewLevel.cpp" />
     <ClCompile Include="Renderable.cpp" />
+    <ClCompile Include="Tee.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="Projection.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -120,6 +121,7 @@
     <ClInclude Include="Level.h" />
     <ClInclude Include="NewLevel.h" />
     <ClInclude Include="Renderable.h" />
+    <ClInclude Include="Tee.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="Projection.h" />
     <ClInclude Include="Shader.h" />

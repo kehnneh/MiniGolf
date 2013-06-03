@@ -23,8 +23,10 @@ void Tile::ReadTile(char* tile)
   }
 
   Mesh *m = new Mesh;
+  m->Initialize();
   m->LoadFromData(meshVertices);
   m->DrawMode(GL_TRIANGLES);
+  m->PostLoad();
 
   Renderable::Color(glm::vec4(0.f, 1.f, 0.f, 1.f));
   _surface = new Renderable;
@@ -34,10 +36,10 @@ void Tile::ReadTile(char* tile)
 
   // I don't know if vector::reserve will assign values. Since vector::resize
   // explicitly takes an initial value, I'll use that
-  _neighborIds.resize(edges, -1);
+  _neighborIds->resize(edges, -1);
   for (unsigned int i = 0; i < edges; i++)
   {
-    ss >> _neighborIds.at(i);
+    ss >> _neighborIds->at(i);
   }
 }
 
@@ -62,6 +64,7 @@ unsigned char Tile::Initialize()
 {
   _tileBounds = new std::vector<Mesh*>;
   _tileWalls = new std::vector<Renderable*>;
+  _neighborIds = new std::vector<unsigned int>;
 
   return STATUS_OK;
 }
@@ -90,6 +93,11 @@ unsigned char Tile::SetNeighbors(std::vector<Tile*> *neighbors)
   _neighbors = neighbors;
 
   return STATUS_OK;
+}
+
+std::vector<unsigned int> *Tile::GetNeighborIds()
+{
+  return _neighborIds;
 }
 
 unsigned char Tile::PostLoad()

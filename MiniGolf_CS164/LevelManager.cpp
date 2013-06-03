@@ -6,6 +6,11 @@
 #include "FileHandle.h"
 #include "NewLevel.h"
 
+#include "Camera.h"
+#include "Shader.h"
+
+#include "UserInput.h"
+
 using namespace std;
 
 static const unsigned int MAX_FUNC_SIZE = 11,
@@ -34,7 +39,7 @@ void LevelManager::CreateLevel(char*)
 void LevelManager::FinalizeLevel(char*)
 {
   unsigned int level = _levels->size() - 1;
-  //_levels->at(level)->PostLoad();
+  _levels->at(level)->PostLoad();
 }
 
 unsigned char LevelManager::Initialize()
@@ -113,5 +118,38 @@ unsigned char LevelManager::LoadLevels()
 
 void LevelManager::PlayLevel(unsigned int level)
 {
+  _activeLevel = level;
+  _uin->BindBall(_levels->at(_activeLevel)->GetBall());
+}
 
+void LevelManager::NextLevel()
+{
+  _activeLevel++;
+  if (_activeLevel == _levels->size())
+  {
+    // signify end of game? go to menu probably
+    _activeLevel--;
+  }
+  _uin->BindBall(_levels->at(_activeLevel)->GetBall());
+}
+
+void LevelManager::PrevLevel()
+{
+  _activeLevel--;
+  if (_activeLevel < 0)
+  {
+    // what are you trying to do!
+    _activeLevel = 0;
+  }
+  _uin->BindBall(_levels->at(_activeLevel)->GetBall());
+}
+
+void LevelManager::Render(Camera *c, Shader *s)
+{
+  _levels->at(_activeLevel)->Render(c, s);
+}
+
+void LevelManager::Tick(double dt)
+{
+  _levels->at(_activeLevel)->Tick(dt);
 }

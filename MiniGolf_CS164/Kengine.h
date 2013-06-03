@@ -3,12 +3,13 @@
 #include <iostream>
 
 #include "Camera.h"
-#include "Level.h"
+//#include "Level.h"
 
 class UserInput;
 class Shader;
 class Projection;
 class GameTimer;
+class LevelManager;
 
 class Kengine
 {
@@ -25,10 +26,12 @@ public:
 
 	Shader *shader;
 
-  Level *LEVEL;
+  //Level *LEVEL;
 	UserInput *userInput;
 	Projection *_projection;
 	Camera *c[2];
+
+  LevelManager *_levelMgr;
 
 	Kengine() :
       shader(0),

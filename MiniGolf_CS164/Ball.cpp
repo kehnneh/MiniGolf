@@ -12,9 +12,15 @@ unsigned char Ball::Initialize()
   _transform = new MatrixObject;
   _transform->Init();
 
-  Renderable::Color(glm::vec4(1.f, 1.f, 1.f, 1.f));
+  Renderable::Color(glm::vec4(0.f, 1.f, 1.f, 1.f));
   _direction = new Arrow;
   _direction->Initialize();
+
+  Renderable::Color(glm::vec4(1.f, 1.f, 1.f, 1.f));
+  _renderable = new Renderable;
+  _renderable->Initialize();
+  _renderable->LoadFromFile("Models/golfball.obj");
+  _renderable->PostLoad();
 
   return STATUS_OK;
 }

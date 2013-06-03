@@ -6,6 +6,11 @@
 #include <glm\glm.hpp>
 
 class Tile;
+class Tee;
+
+class Camera;
+class Shader;
+class Ball;
 
 class NewLevel
 {
@@ -18,13 +23,17 @@ private:
 
   unsigned int _par;
 
-  // Tee *_t;
-  // Cup *_c;
+  Tee *_tee, *_cup;
+  Ball *_ball;
 
 public:
   NewLevel() :
     _lightSourceDirection(1.f, 1.f, 1.f),
-    _ambientColor(.2f, .2f, .2f, 1.f)
+    _ambientColor(.2f, .2f, .2f, 1.f),
+    _name(0),
+    _tee(0),
+    _cup(0),
+    _ball(0)
   {}
 
   ~NewLevel()
@@ -34,6 +43,8 @@ public:
 
   unsigned char DeInitialize();
 
+  unsigned char PostLoad();
+
   void ReadName(char*);
   void ReadPar(char*);
   void ReadTile(char*);
@@ -42,7 +53,10 @@ public:
 
   std::string GetName();
   unsigned int GetPar();
-  // Tee *GetTee();
-  // Cup *GetCup();
+
+  void Render(Camera *c, Shader *s);
+  void Tick(double t);
+
+  Ball *GetBall();
 };
 

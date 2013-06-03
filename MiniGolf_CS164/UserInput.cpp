@@ -4,6 +4,7 @@
 #include "Ball.h"
 #include "UserInput.h"
 #include "Camera.h"
+#include "LevelManager.h"
 
 void UserInput::Init()
 {
@@ -50,6 +51,11 @@ void UserInput::BindCamera(Camera* c)
 void UserInput::BindBall(Ball *ball)
 {
   _ball = ball;
+}
+
+void UserInput::SetLevelManager(LevelManager *lvlMgr)
+{
+  _levelMgr = lvlMgr;
 }
 
 void UserInput::Tick(const double dt)
@@ -104,5 +110,15 @@ void UserInput::Tick(const double dt)
   else if (m_specialKeys[GLUT_KEY_UP])
   {
     _ball->Hit(1.f);
+  }
+  else if (IsKeyPressed('n'))
+  {
+    _levelMgr->NextLevel();
+    m_keys['n'] = false;
+  }
+  else if (IsKeyPressed('p'))
+  {
+    _levelMgr->PrevLevel();
+    m_keys['p'] = false;
   }
 }
