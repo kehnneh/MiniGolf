@@ -30,6 +30,10 @@ void MatrixObject::DeInit()
   Delete(&_mat);
 }
 
+/**
+ * Increments val by degrees, constraining the values to (0, limit) and wrapping
+ * them appropriately
+ */
 void IncrementDegreesWrap(float& val, float degrees, float limit)
 {
   val += degrees;
@@ -44,6 +48,9 @@ void IncrementDegreesWrap(float& val, float degrees, float limit)
   }
 }
 
+/**
+ * Increments val by degrees, constraining the values to (-limit, limit) without wrapping
+ */
 void IncrementDegrees(float& val, float degrees, float limit)
 {
   val += degrees;
@@ -229,7 +236,7 @@ void MatrixObject::Tick()
 
   if (_updateFlags)
   {
-    *_mat = Mat4(glm::scale(*_scale)) * *_posmat * *_rotmat;// *_rotmat * *_posmat;
+    *_mat = Mat4(glm::scale(*_scale)) * *_posmat * *_rotmat;
     _updateFlags = 0x0;
   }
 }

@@ -208,7 +208,7 @@ unsigned char Ball::Render(Camera *camera, Shader *shader)
 {
   glm::mat4 transform = glm::mat4_cast(*_transform->Matrix());
 
-  glUniformMatrix4fv(shader->mat_modelTransform, 1, GL_FALSE, (GLfloat *) &transform);
+  glUniformMatrix4fv(shader->mat_modelTransform, 1, GL_FALSE, (GLfloat *) _transform->Matrix());
 
   glm::mat3 normalMat = glm::mat3(glm::inverse(glm::transpose(transform * *camera->Matrix())));
 	glUniformMatrix3fv(shader->mat_normal, 1, GL_FALSE, (GLfloat*) &normalMat);

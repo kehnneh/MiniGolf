@@ -2,14 +2,14 @@
 
 #include <glm\glm.hpp>
 
-#include "AlignedAllocationPolicy.h"
-
 #define _SIMD_OPS
 
 #ifdef _SIMD_OPS
   #define GLM_SIMD_ENABLE_XYZW_UNION
   #include <glm\gtx\simd_mat4.hpp>
   #include <glm\gtx\simd_vec4.hpp>
+
+  #include "AlignedAllocationPolicy.h"
 
   typedef glm::simdMat4 Mat4;
 #else
@@ -19,7 +19,11 @@
   typedef glm::mat4x4 Mat4;
 #endif
 
+#ifdef _SIMD_OPS
 class MatrixObject : public AlignedAllocationPolicy<16>
+#else
+class MatrixObject
+#endif
 {
 private:
   Mat4 *_mat, *_rotmat, *_posmat;
