@@ -19,8 +19,9 @@ void DeleteVectorPtrs(std::vector<T*> **vec)
   {
     for (std::vector<T*>::iterator it = (*vec)->begin(); it != (*vec)->end(); ++it)
     {
-      delete (*it);
-      (*it) = 0;
+      Delete(&(*it));
+      //delete (*it);
+      //(*it) = 0;
     }
     delete (*vec);
     (*vec) = 0;

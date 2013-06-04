@@ -94,7 +94,6 @@
     <ClCompile Include="MatrixObject.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Level.cpp" />
-    <ClCompile Include="NewLevel.cpp" />
     <ClCompile Include="Renderable.cpp" />
     <ClCompile Include="Tee.cpp" />
     <ClCompile Include="Tile.cpp" />
@@ -119,7 +118,6 @@
     <ClInclude Include="MatrixObject.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Level.h" />
-    <ClInclude Include="NewLevel.h" />
     <ClInclude Include="Renderable.h" />
     <ClInclude Include="Tee.h" />
     <ClInclude Include="Tile.h" />

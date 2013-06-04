@@ -11,9 +11,10 @@
 
 void MatrixObject::Init()
 {
-  _mat = new glm::mat4;
-  _posmat = new glm::mat4;
-  _rotmat = new glm::mat4;
+  //_mat = new Mat4;
+  _mat = (Mat4*) _aligned_malloc(sizeof(Mat4), 16);
+  _posmat = (Mat4*) _aligned_malloc(sizeof(Mat4), 16);
+  _rotmat = (Mat4*) _aligned_malloc(sizeof(Mat4), 16);
   _pos = new glm::vec3;
   _rot = new glm::vec3;
   _scale = new glm::vec3(1.f, 1.f, 1.f);
@@ -218,22 +219,22 @@ void MatrixObject::Tick()
 {
   if (_updateFlags & UPDATE_ROTATION)
   {
-    *_rotmat = glm::mat4_cast(glm::quat(*_rot));
+    *_rotmat = Mat4(glm::mat4_cast(glm::quat(*_rot)));
   }
 
   if (_updateFlags & UPDATE_POSITION)
   {
-    *_posmat = glm::translate(*_pos / *_scale);
+    *_posmat = Mat4(glm::translate(*_pos / *_scale));
   }
 
   if (_updateFlags)
   {
-    *_mat = glm::scale(*_scale) * *_posmat * *_rotmat;// *_rotmat * *_posmat;
+    *_mat = Mat4(glm::scale(*_scale)) * *_posmat * *_rotmat;// *_rotmat * *_posmat;
     _updateFlags = 0x0;
   }
 }
 
-const glm::mat4 *MatrixObject::Matrix() const
+Mat4 *MatrixObject::Matrix() const
 {
   return _mat;
 }

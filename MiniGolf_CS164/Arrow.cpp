@@ -49,7 +49,7 @@ unsigned char Arrow::Render(Camera *camera, Shader *shader)
 {
   glUniformMatrix4fv(shader->mat_modelTransform, 1, GL_FALSE, (GLfloat*) _transform->Matrix());
 
-  glm::mat3 normalMat = glm::inverseTranspose(glm::mat3(*_transform->Matrix() * *camera->Matrix()));
+  glm::mat3 normalMat = glm::mat3(glm::mat4(glm::inverse(glm::transpose(glm::mat4_cast(*_transform->Matrix()) * *camera->Matrix()))));
 	glUniformMatrix3fv(shader->mat_normal, 1, GL_FALSE, (GLfloat*) &normalMat);
 
   _renderable->Render();

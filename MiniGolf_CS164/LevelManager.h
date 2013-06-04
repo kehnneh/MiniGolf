@@ -4,7 +4,7 @@
 #include <map>
 #include <string>
 
-class NewLevel;
+class Level;
 class Camera;
 class Shader;
 class UserInput;
@@ -12,7 +12,7 @@ class UserInput;
 class LevelManager
 {
 public:
-  typedef void (NewLevel::*levelCallback)(char*);
+  typedef void (Level::*levelCallback)(char*);
   typedef void (LevelManager::*levelMgrCallback)(char*);
 
   UserInput *_uin;
@@ -20,7 +20,7 @@ public:
 private:
   std::string _courseName;
 
-  std::vector<NewLevel*> *_levels;
+  std::vector<Level*> *_levels;
 
   unsigned int _activeLevel;
 

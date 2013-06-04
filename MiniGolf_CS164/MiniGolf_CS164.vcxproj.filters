@@ -90,9 +90,6 @@
     <ClCompile Include="Renderable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Level.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Arrow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -108,10 +105,10 @@
     <ClCompile Include="FileHandle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NewLevel.cpp">
+    <ClCompile Include="Tee.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tee.cpp">
+    <ClCompile Include="Level.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -155,9 +152,6 @@
     <ClInclude Include="Ball.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Level.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Renderable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -179,10 +173,10 @@
     <ClInclude Include="FileHandle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NewLevel.h">
+    <ClInclude Include="Tee.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tee.h">
+    <ClInclude Include="Level.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

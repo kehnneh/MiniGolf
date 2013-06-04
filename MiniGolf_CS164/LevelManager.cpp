@@ -4,7 +4,7 @@
 #include <fstream>
 
 #include "FileHandle.h"
-#include "NewLevel.h"
+#include "Level.h"
 
 #include "Camera.h"
 #include "Shader.h"
@@ -31,7 +31,7 @@ void LevelManager::InitializeCourse(char* params)
 
 void LevelManager::CreateLevel(char*)
 {
-  NewLevel *l = new NewLevel;
+  Level *l = new Level;
   l->Initialize();
   _levels->push_back(l);
 }
@@ -44,17 +44,17 @@ void LevelManager::FinalizeLevel(char*)
 
 unsigned char LevelManager::Initialize()
 {
-  _levels = new std::vector<NewLevel*>;
+  _levels = new std::vector<Level*>;
 
   __levelMgrFuncMap["course"] = &LevelManager::InitializeCourse;
   __levelMgrFuncMap["begin_hole"] = &LevelManager::CreateLevel;
   __levelMgrFuncMap["end_hole"] = &LevelManager::FinalizeLevel;
 
-  __levelFuncMap["name"] = &NewLevel::ReadName;
-  __levelFuncMap["par"] = &NewLevel::ReadPar;
-  __levelFuncMap["tile"] = &NewLevel::ReadTile;
-  __levelFuncMap["tee"] = &NewLevel::ReadTee;
-  __levelFuncMap["cup"] = &NewLevel::ReadCup;
+  __levelFuncMap["name"] = &Level::ReadName;
+  __levelFuncMap["par"] = &Level::ReadPar;
+  __levelFuncMap["tile"] = &Level::ReadTile;
+  __levelFuncMap["tee"] = &Level::ReadTee;
+  __levelFuncMap["cup"] = &Level::ReadCup;
 
   return STATUS_OK;
 }

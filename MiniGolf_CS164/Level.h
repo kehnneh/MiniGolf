@@ -1,61 +1,61 @@
 #pragma once
 
-#include <vector>
 #include <string>
+#include <vector>
 
-#include "Tile.h"
-#include "Camera.h"
-#include "Ball.h"
+#include <glm\glm.hpp>
+
+class Tile;
+class Tee;
+
+class Camera;
+class Shader;
+class Ball;
 
 class Level
 {
 private:
-  // This needs to be Tile*
-  std::vector<Tile*> *_tiles;
+  std::vector<Tile*> _tiles;
+  std::string *_name;
 
-  glm::vec3 *_lightSourceDirection;
-  glm::vec4 *_ambient;
+  glm::vec3 _lightSourceDirection;
+  glm::vec4 _ambientColor;
 
-  unsigned short _tee, _cup;
+  unsigned int _par;
 
+  Tee *_tee, *_cup;
   Ball *_ball;
 
 public:
   Level() :
-    _tiles(0),
-    _ball(0),
-    _ambient(0),
-    _lightSourceDirection(0),
-    _tee(-1),
-    _cup(-1)
+    _lightSourceDirection(1.f, 1.f, 1.f),
+    _ambientColor(.2f, .2f, .2f, 1.f),
+    _name(0),
+    _tee(0),
+    _cup(0),
+    _ball(0)
   {}
 
   ~Level()
   {}
 
-  /*
-   * Allocates memory
-   */
   unsigned char Initialize();
 
-  /*
-   * Frees memory
-   */
   unsigned char DeInitialize();
 
-  /*
-   * Loads the level from the specified level file. Populates _tiles
-   */
-  unsigned char LoadFromFile(std::string filename);
-
-  /*
-   * Post-Initialization data assignments
-   */
   unsigned char PostLoad();
 
-  unsigned char Tick(double t);
+  void ReadName(char*);
+  void ReadPar(char*);
+  void ReadTile(char*);
+  void ReadTee(char*);
+  void ReadCup(char*);
 
-  unsigned char Render(Camera *camera, Shader *shader);
+  std::string GetName();
+  unsigned int GetPar();
+
+  void Render(Camera *c, Shader *s);
+  void Tick(double t);
 
   Ball *GetBall();
 };

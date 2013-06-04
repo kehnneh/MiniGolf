@@ -2,10 +2,25 @@
 
 #include <glm\glm.hpp>
 
+#define _SIMD_OPS
+
+#ifdef _SIMD_OPS
+  #define GLM_SIMD_ENABLE_XYZW_UNION
+  #include <glm\gtx\simd_mat4.hpp>
+  #include <glm\gtx\simd_vec4.hpp>
+
+  typedef glm::simdMat4 Mat4;
+#else
+  #include <glm\core\type_mat4x4.hpp>
+  #include <glm\core\type_vec4.hpp>
+
+  typedef glm::mat4x4 Mat4;
+#endif
+
 class MatrixObject
 {
 private:
-  glm::mat4 *_mat, *_rotmat, *_posmat;
+  Mat4 *_mat, *_rotmat, *_posmat;
   glm::vec3 *_pos, *_rot, *_scale;
 
   // two-bit flag for updating _rotmat and _posmat
@@ -17,6 +32,7 @@ public:
       _pos(0), _rot(0), _scale(0),
       _updateFlags(0x3)
 	{}
+
 	~MatrixObject()
 	{}
 
@@ -66,6 +82,6 @@ public:
   void IncScale(float x, float y, float z);
 
   // Matrix getter
-  const glm::mat4 *Matrix() const;
+  Mat4 *Matrix() const;
 };
 
