@@ -2,6 +2,8 @@
 
 #include <glm\glm.hpp>
 
+#include "AlignedAllocationPolicy.h"
+
 #define _SIMD_OPS
 
 #ifdef _SIMD_OPS
@@ -17,7 +19,7 @@
   typedef glm::mat4x4 Mat4;
 #endif
 
-class MatrixObject
+class MatrixObject : public AlignedAllocationPolicy<16>
 {
 private:
   Mat4 *_mat, *_rotmat, *_posmat;
@@ -82,6 +84,6 @@ public:
   void IncScale(float x, float y, float z);
 
   // Matrix getter
-  Mat4 *Matrix() const;
+  Mat4 *Matrix();
 };
 

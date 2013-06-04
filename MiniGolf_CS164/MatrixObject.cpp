@@ -234,7 +234,7 @@ void MatrixObject::Tick()
   }
 }
 
-Mat4 *MatrixObject::Matrix() const
+Mat4 *MatrixObject::Matrix()
 {
   return _mat;
 }

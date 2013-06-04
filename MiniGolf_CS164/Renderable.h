@@ -3,6 +3,7 @@
 /// STL | GLM stuff
 #include <vector>
 #include <gl\glew.h>
+#include <gl\freeglut.h>
 #include <glm\glm.hpp>
 
 /// My stuff
