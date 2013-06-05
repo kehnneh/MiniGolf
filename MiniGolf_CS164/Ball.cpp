@@ -136,7 +136,7 @@ bool Ball::HandleFakeCollision(float & t, glm::vec3 & pos, glm::vec3 & endpos, g
   return false;
 }
 
-bool Ball::HandleCollision(float & t, glm::vec3 & pos, glm::vec3 & endpos, glm::vec3 & d, float dist, glm::vec3 & w)
+bool Ball::HandleCollision(float & t, glm::vec3 & pos, glm::vec3 & endpos, glm::vec3 & d, float dist)
 {
   std::vector<Renderable*> *walls = _tile->RealWalls();
   unsigned int numNeighbors = walls->size();
@@ -151,10 +151,16 @@ bool Ball::HandleCollision(float & t, glm::vec3 & pos, glm::vec3 & endpos, glm::
         //w = m->NormalData().at(0);
         // we collided, find the new tile to move to, and update the position, and velocity
         //_tile = _tile->Neighbor(n);
-        //endpos = *_transform->Position() + (((timeElapsed + 0.005f) * _speed) * d);
+        
+        /*
         w = glm::proj(-d, m->NormalData().at(0));
         d = (2.f * w) + d;
+        */
+        //d *= -1.f;
         t -= (timeElapsed + 0.005f);
+        if (t < 0.f) t *= -1.f;
+        d *= -1.f;
+        endpos = *_transform->Position() + (((t - 0.01f) * _speed) * d);
         return true;
       }
     }
@@ -207,13 +213,13 @@ unsigned char Ball::Tick(double t)
     endpos = pos + ((dt * _speed) * d);
   }
 
-  glm::vec3 w;
-  while (HandleCollision(dt, pos, endpos, d, 0.05f, w))
+  while (HandleCollision(dt, pos, endpos, d, 0.0f))
   {
     pos = endpos;
     // recompute d
     //w = glm::proj(-d, w);
     //d = (w * 2.f) + d;
+    //d *= -1.f;
     endpos = pos + ((dt * _speed) * d);
   }
   

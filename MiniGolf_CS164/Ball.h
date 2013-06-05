@@ -55,7 +55,7 @@ public:
 
   bool HandleFakeCollision(float & t, glm::vec3 & pos, glm::vec3 & endpos, glm::vec3 & d, float dist);
 
-  bool HandleCollision(float & t, glm::vec3 & pos, glm::vec3 & endpos, glm::vec3 & d, float dist, glm::vec3 & w);
+  bool HandleCollision(float & t, glm::vec3 & pos, glm::vec3 & endpos, glm::vec3 & d, float dist);
 
   bool Hit(float power);
 
