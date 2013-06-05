@@ -12,7 +12,8 @@
 void MatrixObject::Init()
 {
   //_mat = new Mat4;
-  _mat = (Mat4*) _aligned_malloc(sizeof(Mat4), 16);
+  //_mat = (Mat4*) _aligned_malloc(sizeof(Mat4), 16);
+  _mat = NewAligned<Mat4>(16);
   _posmat = (Mat4*) _aligned_malloc(sizeof(Mat4), 16);
   _rotmat = (Mat4*) _aligned_malloc(sizeof(Mat4), 16);
   _pos = new glm::vec3;
@@ -25,9 +26,9 @@ void MatrixObject::DeInit()
   Delete(&_scale);
   Delete(&_rot);
   Delete(&_pos);
-  Delete(&_rotmat);
-  Delete(&_posmat);
-  Delete(&_mat);
+  DeleteAligned(&_rotmat);
+  DeleteAligned(&_posmat);
+  DeleteAligned(&_mat);
 }
 
 /**

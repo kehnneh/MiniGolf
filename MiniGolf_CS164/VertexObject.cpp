@@ -7,17 +7,20 @@
 
 void VertexObject::Init()
 {
+  _vec = NewAligned<Vec4>(16);
   _vert = new glm::vec3;
 }
 
 void VertexObject::DeInit()
 {
   Delete(&_vert);
+  DeleteAligned(&_vec);
 }
 
 float VertexObject::Length() const
 {
-  return glm::length(*_vert);
+  //return glm::length(*_vert);
+  return glm::length(*_vec);
 }
 
 void VertexObject::Normalize()

@@ -13,6 +13,22 @@ void Delete(T **thing)
 }
 
 template <typename T>
+void DeleteAligned(T **alignedThing)
+{
+  if (*alignedThing)
+  {
+    _aligned_free(*alignedThing);
+    (*alignedThing) = 0;
+  }
+}
+
+template <typename T>
+T *NewAligned(size_t alignment)
+{
+  return (T*) _aligned_malloc(sizeof(T), alignment);
+}
+
+template <typename T>
 void DeleteVectorPtrs(std::vector<T*> **vec)
 {
   if (*vec)
