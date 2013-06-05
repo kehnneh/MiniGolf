@@ -72,6 +72,11 @@ bool Ball::Hit(float power)
   return true;
 }
 
+bool Ball::IsMoving()
+{
+  return _speed > 0.f;
+}
+
 float Ball::DetectCollision(glm::vec3 const & pos, glm::vec3 const & endPos, const Mesh *m, float dist)
 {
   unsigned char pos_state, endPos_state;
@@ -192,19 +197,15 @@ unsigned char Ball::Tick(double t)
 
   float dt = (float) t;
 
-  float degrees = glm::degrees(_direction->Matrix()->Rotation()->y);
-  glm::vec3 normal =  _tile->Normal();
-  glm::vec3 xzd = glm::rotate(*_velocity, degrees, glm::vec3(0.f, 1.f, 0.f));
-  glm::vec3 x_perp = glm::cross(xzd, glm::vec3(0.f, 1.f, 0.f));
-  //glm::vec3 d = glm::cross(normal, x_perp);
+  float degrees = _direction->Matrix()->Rotation()->y;//glm::degrees(_direction->Matrix()->Rotation()->y);
+  glm::vec3 normal = _tile->Normal();
 
-  glm::vec3 d = ComputeSurfaceDirection(*_velocity, glm::degrees(_direction->Matrix()->Rotation()->y), glm::vec3(0.f, 1.f, 0.f), _tile->Normal());
+  glm::vec3 d = ComputeSurfaceDirection(*_velocity, degrees, glm::vec3(0.f, 1.f, 0.f), normal);
 
   glm::vec3 pos = *_transform->Position();
   glm::vec3 endpos = *_transform->Position() + ((dt * _speed) * d);
 
   // COLLISION DETECTION! DID WE COLLIDE INTO ANOTHER TILE?
-  //HandleCollision(dt, pos, endpos, d);
   while (HandleFakeCollision(dt, pos, endpos, d, 0.f))
   {
     pos = endpos;

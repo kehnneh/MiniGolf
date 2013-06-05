@@ -101,11 +101,17 @@ void UserInput::Tick(const double dt)
   // Ball Direction control
   else if (m_specialKeys[GLUT_KEY_LEFT])
   {
-    _ball->DirectionMatrix()->IncYaw(-1.f * _directionSensitivity * t);
+    if (!_ball->IsMoving())
+    {
+      _ball->DirectionMatrix()->IncYaw(1.f * _rotationSensitivity * t);
+    }
   }
   else if (m_specialKeys[GLUT_KEY_RIGHT])
   {
-    _ball->DirectionMatrix()->IncYaw(1.f * _directionSensitivity * t);
+    if (!_ball->IsMoving())
+    {
+      _ball->DirectionMatrix()->IncYaw(-1.f * _rotationSensitivity * t);
+    }
   }
   else if (m_specialKeys[GLUT_KEY_UP])
   {

@@ -15,7 +15,8 @@ private:
 
 public:
   Arrow() :
-    _renderable(0)
+    _renderable(0),
+    _transform(0)
   {}
 
   ~Arrow()
@@ -28,6 +29,8 @@ public:
   unsigned char Tick(double t);
 
   unsigned char Render(Camera *camera, Shader *shader);
+
+  void RotateY(float amt);
 
   MatrixObject *Matrix();
 };

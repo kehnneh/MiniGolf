@@ -59,6 +59,8 @@ public:
 
   bool Hit(float power);
 
+  bool IsMoving();
+
   MatrixObject *Matrix();
 
   MatrixObject *DirectionMatrix();

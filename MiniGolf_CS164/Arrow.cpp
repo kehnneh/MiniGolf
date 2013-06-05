@@ -57,6 +57,8 @@ unsigned char Arrow::Render(Camera *camera, Shader *shader)
   return STATUS_OK;
 }
 
+void RotateY(float amt);
+
 MatrixObject *Arrow::Matrix()
 {
   return _transform;
