@@ -191,6 +191,7 @@ unsigned char Tile::Render(Camera *camera, Shader *s)
     }
   }
 
+  /*
   it = _tileBoundRenderables.begin(), end = _tileBoundRenderables.end();
   for (; it != end; ++it)
   {
@@ -199,7 +200,7 @@ unsigned char Tile::Render(Camera *camera, Shader *s)
       (*it)->Render();
     }
   }
-
+  */
   _surface->Render();
 
   return STATUS_OK;

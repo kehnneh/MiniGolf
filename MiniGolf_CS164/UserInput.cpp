@@ -115,7 +115,7 @@ void UserInput::Tick(const double dt)
   }
   else if (m_specialKeys[GLUT_KEY_UP])
   {
-    _ball->Hit(1.f);
+    _ball->Hit(2.f);
   }
   else if (IsKeyPressed('n'))
   {

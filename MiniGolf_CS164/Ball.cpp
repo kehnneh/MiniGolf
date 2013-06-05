@@ -69,6 +69,10 @@ bool Ball::Hit(float power)
   }
 
   _speed = power;
+  // New
+  float degy = _direction->Matrix()->Rotation()->y;
+  *_velocity = glm::rotate(glm::vec3(0.f, 0.f, 1.f), degy, glm::vec3(0.f, 1.f, 0.f));
+
   return true;
 }
 
@@ -93,7 +97,7 @@ float Ball::DetectCollision(glm::vec3 const & pos, glm::vec3 const & endPos, con
     glm::vec3 ray = endPos - pos;
     ray = glm::normalize(ray);
 
-    return - (d + glm::dot(norm, pos)) / glm::dot(norm, ray);
+    return - ((d + dist) + glm::dot(norm, pos)) / glm::dot(norm, ray);
   }
 
   return 0.f;
@@ -109,9 +113,9 @@ MatrixObject *Ball::DirectionMatrix()
   return _direction->Matrix();
 }
 
-glm::vec3 ComputeSurfaceDirection(glm::vec3 velocity, float degy, glm::vec3 up, glm::vec3 norm)
+glm::vec3 ComputeSurfaceDirection(glm::vec3 velocity, glm::vec3 up, glm::vec3 norm)
 {
-  glm::vec3 xzd = glm::rotate(velocity, degy, up);
+  glm::vec3 xzd = glm::normalize(glm::vec3(velocity.x, 0.f, velocity.z));
   glm::vec3 x = glm::cross(xzd, up);
   return glm::cross(norm, x);
 }
@@ -130,8 +134,9 @@ bool Ball::HandleFakeCollision(float & t, glm::vec3 & pos, glm::vec3 & endpos, g
       {
         // we collided, find the new tile to move to, and update the position, and velocity
         _tile = _tile->Neighbor(n);
-        //endpos = *_transform->Position() + (((timeElapsed + 0.005f) * _speed) * d);
+        endpos = *_transform->Position() + (((timeElapsed + 0.005f) * _speed) * d);
         t -= (timeElapsed + 0.005f);
+        //endpos = *_transform->Position() + (((t - 0.01f) * _speed) * _tile->Normal());
         return true;
       }
     }
@@ -153,18 +158,12 @@ bool Ball::HandleCollision(float & t, glm::vec3 & pos, glm::vec3 & endpos, glm::
       float timeElapsed = DetectCollision(pos, endpos, m, dist);
       if (timeElapsed > 0.f)
       {
-        //w = m->NormalData().at(0);
-        // we collided, find the new tile to move to, and update the position, and velocity
-        //_tile = _tile->Neighbor(n);
-        
-        /*
-        w = glm::proj(-d, m->NormalData().at(0));
+        glm::vec3 w = glm::proj(-d, m->NormalData().at(0));
         d = (2.f * w) + d;
-        */
-        //d *= -1.f;
+        d = ComputeSurfaceDirection(*_velocity, glm::vec3(0.f, 1.f, 0.f), _tile->Normal());
+        
         t -= (timeElapsed + 0.005f);
-        if (t < 0.f) t *= -1.f;
-        d *= -1.f;
+        if (t < 0.f) t = 0.01f;
         endpos = *_transform->Position() + (((t - 0.01f) * _speed) * d);
         return true;
       }
@@ -197,31 +196,26 @@ unsigned char Ball::Tick(double t)
 
   float dt = (float) t;
 
-  float degrees = _direction->Matrix()->Rotation()->y;//glm::degrees(_direction->Matrix()->Rotation()->y);
   glm::vec3 normal = _tile->Normal();
 
-  glm::vec3 d = ComputeSurfaceDirection(*_velocity, degrees, glm::vec3(0.f, 1.f, 0.f), normal);
-
+  // If we just hit the ball, the velocity will always be restricted to the XZ-plane
+  *_velocity = ComputeSurfaceDirection(*_velocity, glm::vec3(0.f, 1.f, 0.f), normal);
   glm::vec3 pos = *_transform->Position();
-  glm::vec3 endpos = *_transform->Position() + ((dt * _speed) * d);
+  glm::vec3 endpos = *_transform->Position() + ((dt * _speed) * *_velocity);
 
-  // COLLISION DETECTION! DID WE COLLIDE INTO ANOTHER TILE?
-  while (HandleFakeCollision(dt, pos, endpos, d, 0.f))
+  // Did we collide into another tile?
+  while (HandleFakeCollision(dt, pos, endpos, *_velocity, 0.f))
   {
     pos = endpos;
-    // recompute d
-    d = ComputeSurfaceDirection(*_velocity, glm::degrees(_direction->Matrix()->Rotation()->y), glm::vec3(0.f, 1.f, 0.f), _tile->Normal());
-    endpos = pos + ((dt * _speed) * d);
+    *_velocity = ComputeSurfaceDirection(*_velocity, glm::vec3(0.f, 1.f, 0.f), _tile->Normal());
+    endpos = pos + ((dt * _speed) * *_velocity);
   }
 
-  while (HandleCollision(dt, pos, endpos, d, 0.0f))
+  // Did we collide into a wall?
+  while (HandleCollision(dt, pos, endpos, *_velocity, 0.03f))
   {
     pos = endpos;
-    // recompute d
-    //w = glm::proj(-d, w);
-    //d = (w * 2.f) + d;
-    //d *= -1.f;
-    endpos = pos + ((dt * _speed) * d);
+    endpos = pos + ((dt * _speed) * *_velocity);
   }
   
   _transform->Position(endpos);

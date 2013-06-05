@@ -7,8 +7,9 @@
 
 struct FloatingText
 {
-  glm::vec2 position;
-  int font;
+  glm::vec2 pos;
+  int selected;
+  void *font;
   std::string str;
 };
 
@@ -30,5 +31,7 @@ public:
   unsigned char Initialize();
 
   unsigned char DeInitialize();
+
+  void Render();
 };
 
