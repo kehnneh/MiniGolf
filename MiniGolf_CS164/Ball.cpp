@@ -5,6 +5,7 @@
 #include "CommonUtils.h"
 #include <glm\gtc\matrix_inverse.hpp>
 #include <glm\gtx\rotate_vector.hpp>
+#include <glm\gtx\projection.hpp>
 
 unsigned char Ball::Initialize()
 {
@@ -60,10 +61,15 @@ unsigned char DetectChange(glm::vec3 norm, glm::vec3 pos, float d)
   return 0x4; // ON plane
 }
 
-void Ball::Hit(float power)
+bool Ball::Hit(float power)
 {
+  if (_speed > 0.f)
+  {
+    return false;
+  }
+
   _speed = power;
-  //*_velocit
+  return true;
 }
 
 float Ball::DetectCollision(glm::vec3 const & pos, glm::vec3 const & endPos, const Mesh *m, float dist)
@@ -82,9 +88,7 @@ float Ball::DetectCollision(glm::vec3 const & pos, glm::vec3 const & endPos, con
     glm::vec3 ray = endPos - pos;
     ray = glm::normalize(ray);
 
-    float timeToCollide = - (d + glm::dot(norm, pos)) / glm::dot(norm, ray);
-    return timeToCollide;
-    //t = - (d + D3DXVec3Dot(&vNormal, &pStart)) / D3DXVec3Dot(&vNormal, &ray);
+    return - (d + glm::dot(norm, pos)) / glm::dot(norm, ray);
   }
 
   return 0.f;
@@ -98,6 +102,71 @@ MatrixObject *Ball::Matrix()
 MatrixObject *Ball::DirectionMatrix()
 {
   return _direction->Matrix();
+}
+
+glm::vec3 ComputeSurfaceDirection(glm::vec3 velocity, float degy, glm::vec3 up, glm::vec3 norm)
+{
+  glm::vec3 xzd = glm::rotate(velocity, degy, up);
+  glm::vec3 x = glm::cross(xzd, up);
+  return glm::cross(norm, x);
+}
+
+bool Ball::HandleFakeCollision(float & t, glm::vec3 & pos, glm::vec3 & endpos, glm::vec3 & d, float dist)
+{
+  std::vector<Mesh*> *fakeWalls = _tile->FakeWalls();
+  unsigned int numNeighbors = fakeWalls->size();
+  for (unsigned int n = 0; n < numNeighbors; ++n)
+  {
+    Mesh *m = fakeWalls->at(n);
+    if (m)
+    {
+      float timeElapsed = DetectCollision(pos, endpos, m, dist);
+      if (timeElapsed > 0.f)
+      {
+        // we collided, find the new tile to move to, and update the position, and velocity
+        _tile = _tile->Neighbor(n);
+        //endpos = *_transform->Position() + (((timeElapsed + 0.005f) * _speed) * d);
+        t -= (timeElapsed + 0.005f);
+        return true;
+      }
+    }
+  }
+
+  // no collision was found
+  return false;
+}
+
+bool Ball::HandleCollision(float & t, glm::vec3 & pos, glm::vec3 & endpos, glm::vec3 & d, float dist, glm::vec3 & w)
+{
+  std::vector<Renderable*> *walls = _tile->RealWalls();
+  unsigned int numNeighbors = walls->size();
+  for (unsigned int n = 0; n < numNeighbors; ++n)
+  {
+    if (walls->at(n))
+    {
+      Mesh *m = walls->at(n)->GetMesh();
+      float timeElapsed = DetectCollision(pos, endpos, m, dist);
+      if (timeElapsed > 0.f)
+      {
+        //w = m->NormalData().at(0);
+        // we collided, find the new tile to move to, and update the position, and velocity
+        //_tile = _tile->Neighbor(n);
+        //endpos = *_transform->Position() + (((timeElapsed + 0.005f) * _speed) * d);
+        w = glm::proj(-d, m->NormalData().at(0));
+        d = (2.f * w) + d;
+        t -= (timeElapsed + 0.005f);
+        return true;
+      }
+    }
+  }
+
+  // no collision was found
+  return false;
+}
+
+void Ball::SetRadius(float r)
+{
+  _radius = r;
 }
 
 unsigned char Ball::Tick(double t)
@@ -115,91 +184,41 @@ unsigned char Ball::Tick(double t)
     return STATUS_OK;
   }
 
-  // need to rotate _velocity to the Arrow's rotation
-  //glm::vec3 direction = glm::rotateY(*_velocity, _direction->Matrix()->Rotation()->y);
-  glm::vec3 direction = glm::normalize(glm::rotate(*_velocity, glm::degrees(_direction->Matrix()->Rotation()->y), _tile->Normal()));
+  float dt = (float) t;
+
+  float degrees = glm::degrees(_direction->Matrix()->Rotation()->y);
+  glm::vec3 normal =  _tile->Normal();
+  glm::vec3 xzd = glm::rotate(*_velocity, degrees, glm::vec3(0.f, 1.f, 0.f));
+  glm::vec3 x_perp = glm::cross(xzd, glm::vec3(0.f, 1.f, 0.f));
+  //glm::vec3 d = glm::cross(normal, x_perp);
+
+  glm::vec3 d = ComputeSurfaceDirection(*_velocity, glm::degrees(_direction->Matrix()->Rotation()->y), glm::vec3(0.f, 1.f, 0.f), _tile->Normal());
 
   glm::vec3 pos = *_transform->Position();
-  glm::vec3 endpos = *_transform->Position() + (((float) t * _speed) * direction);
+  glm::vec3 endpos = *_transform->Position() + ((dt * _speed) * d);
 
   // COLLISION DETECTION! DID WE COLLIDE INTO ANOTHER TILE?
-  std::vector<Mesh*> *fakeWalls = _tile->FakeWalls();
-  //std::vector<Mesh*>::iterator fit = fakeWalls->begin(), fitend = fakeWalls->end();
-  unsigned int numNeighbors = fakeWalls->size();
-  for (unsigned int n = 0; n < numNeighbors; ++n)
+  //HandleCollision(dt, pos, endpos, d);
+  while (HandleFakeCollision(dt, pos, endpos, d, 0.f))
   {
-    Mesh *m = fakeWalls->at(n);
-    if (m)
-    {
-      float timeElapsed = DetectCollision(pos, endpos, m, 0.f);
-      if (timeElapsed > 0.f)
-      {
-        // we collided, find the new tile to move to, and update the position, and velocity
-        _tile = _tile->Neighbor(n);
-        //endpos = *_transform->Position() + ((timeElapsed * _speed) * direction);
-        break;
-      }
-    }
+    pos = endpos;
+    // recompute d
+    d = ComputeSurfaceDirection(*_velocity, glm::degrees(_direction->Matrix()->Rotation()->y), glm::vec3(0.f, 1.f, 0.f), _tile->Normal());
+    endpos = pos + ((dt * _speed) * d);
   }
 
+  glm::vec3 w;
+  while (HandleCollision(dt, pos, endpos, d, 0.05f, w))
+  {
+    pos = endpos;
+    // recompute d
+    //w = glm::proj(-d, w);
+    //d = (w * 2.f) + d;
+    endpos = pos + ((dt * _speed) * d);
+  }
+  
   _transform->Position(endpos);
   _direction->Matrix()->Position(endpos);
-
-  /*
-  // calculate starting position and final position
-  const glm::vec3 *pos = _transform->Position();
-  const glm::vec3 end = *pos + (_speed * *_velocity);
-
-  // Using these positions, is there a collision with any real walls?
-  // Real wall collisions will happen before fake wall collisions
-  // If a collision with a real wall existed, bounce off (recompute velocity, speed, start and final positions),
-  // and reiterate this method with the remaining time left in the Tick
-  std::vector<Renderable*> *realWalls = _tile->RealWalls();
-  std::vector<Renderable*>::iterator rit = realWalls->begin(), ritend = realWalls->end();
-  for (; rit != ritend; ++rit)
-  {
-    if (*rit)
-    {
-      float timeElapsed = DetectCollision(*pos, end, (*rit)->GetMesh(), _radius);
-      if (timeElapsed < t)
-      {
-        // we collided, figure out how to update velocity and such
-      }
-    }
-  }
-
-  // If a collision with a fake wall existed, go through the fake wall, change velocity if the slope of the
-  // next tile is different, adjust position if the slope is different, update tile reference to the new tile,
-  // and reiterate t his method with the remaining time left in the Tick
-  std::vector<Mesh*> *fakeWalls = _tile->FakeWalls();
-  std::vector<Mesh*>::iterator fit = fakeWalls->begin(), fitend = fakeWalls->end();
-  for (; fit != fitend; ++fit)
-  {
-    if (*fit)
-    {
-      float timeElapsed = DetectCollision(*pos, end, (*fit), 0.f);
-      if (timeElapsed < t)
-      {
-        // we collided, find the new tile to move to, and update the position, and velocity
-      }
-    }
-  }
-
-  */
-
-  /*
-  const glm::vec3 *pos = _transform->Position();
-
-  _transform->Position(*pos + (_speed * *_velocity));
-
-  _speed -= 10.f * t;
-
-  // Prevent speed from going below 0.
-  if (_speed <= 0.f)
-  {
-    _speed = 0.f;
-  }
-  */
 
   return STATUS_OK;
 }
@@ -214,7 +233,11 @@ unsigned char Ball::Render(Camera *camera, Shader *shader)
 	glUniformMatrix3fv(shader->mat_normal, 1, GL_FALSE, (GLfloat*) &normalMat);
 
   _renderable->Render();
-  _direction->Render(camera, shader);
+
+  if (_speed == 0.f)
+  {
+    _direction->Render(camera, shader);
+  }
 
   return STATUS_OK;
 }

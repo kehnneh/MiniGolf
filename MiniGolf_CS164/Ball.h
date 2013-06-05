@@ -49,9 +49,15 @@ public:
 
   unsigned char Render(Camera *camera, Shader *shader);
 
+  void SetRadius(float r);
+
   float DetectCollision(glm::vec3 const & pos, glm::vec3 const & endPos, const Mesh *m, float dist);
 
-  void Hit(float power);
+  bool HandleFakeCollision(float & t, glm::vec3 & pos, glm::vec3 & endpos, glm::vec3 & d, float dist);
+
+  bool HandleCollision(float & t, glm::vec3 & pos, glm::vec3 & endpos, glm::vec3 & d, float dist, glm::vec3 & w);
+
+  bool Hit(float power);
 
   MatrixObject *Matrix();
 

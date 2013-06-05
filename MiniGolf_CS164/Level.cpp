@@ -50,7 +50,7 @@ unsigned char Level::PostLoad()
 
   _ball = new Ball;
   _ball->Initialize();
-  _ball->CurrentTile(_tiles.at(_tee->GetTile() - 1));
+  _ball->CurrentTile(_tiles.at(_tee->GetTile()));
   _ball->Matrix()->Position(*_tee->GetMatrix()->Position() + glm::vec3(0.f, .05f, 0.f));
   _ball->Matrix()->Scale(0.05);
   _ball->DirectionMatrix()->Scale(0.25f);
@@ -90,7 +90,7 @@ void Level::ReadTee(char* tee)
 
   _tee = new Tee;
   _tee->Initialize();
-  _tee->SetTile(tileid);
+  _tee->SetTile(tileid - 1);
 
   // Load Renderable for circle
   // Scale appropriately
@@ -117,7 +117,7 @@ void Level::ReadCup(char* cup)
   ss >> tileid >> pos.x >> pos.y >> pos.z;
   _cup = new Tee;
   _cup->Initialize();
-  _cup->SetTile(tileid);
+  _cup->SetTile(tileid - 1);
 
   Renderable *r = new Renderable;
   r->Initialize();

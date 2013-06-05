@@ -21,6 +21,8 @@ private:
   // Collision boundaries between tiles. Check these to see if the Tile has entered another tile
   std::vector<Mesh*> *_tileBounds;
 
+  std::vector<Renderable*> _tileBoundRenderables;
+
   // Physical boundaries at the edge of the world. Check these to see if the Ball has collided with a wall
   std::vector<Renderable*> *_tileWalls;
 

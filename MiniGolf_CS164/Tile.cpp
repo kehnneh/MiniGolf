@@ -144,6 +144,17 @@ unsigned char Tile::PostLoad()
     return 0x2;
   }
 
+  for (unsigned int i = 0; i < _tileBounds->size(); i++)
+  {
+    if (_tileBounds->at(i) == 0) continue;
+    Renderable::Color(glm::vec4(1.f, 1.f, 0.f, 1.f));
+    Renderable *r = new Renderable;
+    r->Initialize();
+    r->SetMesh(_tileBounds->at(i));
+    r->PostLoad();
+    _tileBoundRenderables.push_back(r);
+  }
+
   return STATUS_OK;
 }
 
@@ -172,6 +183,15 @@ unsigned char Tile::Render(Camera *camera, Shader *s)
 	glUniformMatrix3fv(s->mat_normal, 1, GL_FALSE, (GLfloat*) &normalMat);
 
   std::vector<Renderable*>::iterator it = _tileWalls->begin(), end = _tileWalls->end();
+  for (; it != end; ++it)
+  {
+    if (*it)
+    {
+      (*it)->Render();
+    }
+  }
+
+  it = _tileBoundRenderables.begin(), end = _tileBoundRenderables.end();
   for (; it != end; ++it)
   {
     if (*it)
