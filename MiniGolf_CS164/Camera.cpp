@@ -25,6 +25,12 @@ void Camera::DeInit()
 	Delete(&_mat);
 }
 
+void Camera::SetTarget(glm::vec3 target)
+{
+  _target = -target;
+  _bMatrixUpdate = true;
+}
+
 void Camera::InitMatrix() {	*_mat = glm::lookAt(_origin, _direction, _up); }
 
 // Grab the Camera's z-axis vector and move negatively along it

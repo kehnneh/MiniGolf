@@ -7,9 +7,10 @@
 #include "ArcballCamera.h"
 #include "FreelookCamera.h"
 #include "TopDown.h"
-#include "GameTimer.h"
 #include "LevelManager.h"
 #include "Renderable.h"
+#include "GameMenu.h"
+#include "MenuContext.h"
 
 #include <gl\glfw.h>
 
@@ -41,12 +42,56 @@ void display()
 	glViewport(0, 0, 640, 480);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  // Draw all 3D-placed objects
-	glEnable(GL_DEPTH_TEST);
+  MenuContext *mc = kengine->userInput->Menu();
 
-  //kengine->LEVEL->Render(kengine->c[kengine->activeCamera], kengine->shader);
-  kengine->_levelMgr->Render(kengine->c[kengine->activeCamera], kengine->shader);
+  if (mc == 0)
+  {
+    // Draw all 3D-placed objects
+    kengine->shader->Enable();
+	  glEnable(GL_DEPTH_TEST);
+    // Send new values to the shaders
+	  glUniform3fv(kengine->shader->eye, 1, (GLfloat*) kengine->c[kengine->activeCamera]->GetPosition());
+	  glUniformMatrix4fv(kengine->shader->mat_camera, 1, GL_FALSE, (GLfloat*) kengine->c[kengine->activeCamera]->Matrix());
+	  glUniformMatrix4fv(kengine->shader->mat_projection, 1, GL_FALSE, (GLfloat*) kengine->_projection->Matrix());
 
+    kengine->_levelMgr->Render(kengine->c[kengine->activeCamera], kengine->shader);
+
+    glUseProgram(0);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glOrtho(0,640,0,480,-5,5);
+    glTranslatef(0.f, 460.f, 0.f);
+    glScalef(1.f, -1.f, 1.f);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE);
+    glDisable(GL_TEXTURE_2D);
+    kengine->userInput->InGameHUD()->Render();
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_TEXTURE);
+    glEnable(GL_LIGHTING);
+  }
+  else
+  {
+    glUseProgram(0);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glOrtho(0,640,0,480,-5,5);
+    glTranslatef(0.f, 460.f, 0.f);
+    glScalef(1.f, -1.f, 1.f);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE);
+    glDisable(GL_TEXTURE_2D);
+    mc->Render();
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_TEXTURE);
+    glEnable(GL_LIGHTING);
+  }
   // Time to draw the HUD!
   //glDisable(GL_DEPTH_TEST);
 
@@ -55,7 +100,7 @@ void display()
 
 void Tick(int value)
 {
-  double dt = 0.02;//kengine->_timer->TickTime();
+  double dt = 0.02;
 	kengine->_projection->Tick();
 
 	// Handle user input
@@ -94,12 +139,6 @@ void Tick(int value)
 	kengine->c[kengine->activeCamera]->Tick();
 
   kengine->_levelMgr->Tick(dt);
-	//kengine->LEVEL->Tick(dt);
-
-	// Send new values to the shaders
-	glUniform3fv(kengine->shader->eye, 1, (GLfloat*) kengine->c[kengine->activeCamera]->GetPosition());
-	glUniformMatrix4fv(kengine->shader->mat_camera, 1, GL_FALSE, (GLfloat*) kengine->c[kengine->activeCamera]->Matrix());
-	glUniformMatrix4fv(kengine->shader->mat_projection, 1, GL_FALSE, (GLfloat*) kengine->_projection->Matrix());
 
 	glutPostRedisplay();
 	glutTimerFunc(20, Tick, 0);
@@ -131,16 +170,7 @@ bool Kengine::Init(int argc, char** argv)
 
 	kengine = this;
 
-	// Initialize GLUT and GLEW
 	InitGlut(argc, argv);
-
-  // Initialize glfw for its timer ;D
-  //if (glfwInit() == GL_FALSE)
-  //{
-  //  return false;
-  //}
-
-	// TODO: Setup GLUI
 
 	glewInit();
 
@@ -152,10 +182,10 @@ bool Kengine::Init(int argc, char** argv)
 	// Set the Renderable class to use the shader
   Renderable::UseShader(shader);
 
-	c[0] = new FreelookCamera;
-	c[0]->Init();
-	c[1] = new ArcballCamera;
+	c[1] = new FreelookCamera;
 	c[1]->Init();
+	c[0] = new ArcballCamera;
+	c[0]->Init();
 	c[2] = new TopDown;
 	c[2]->Init();
 
@@ -180,16 +210,13 @@ bool Kengine::Init(int argc, char** argv)
   _levelMgr->PlayLevel(0);
   userInput->SetLevelManager(_levelMgr);
 
-  /*
-	LEVEL = new Level;
-	LEVEL->Initialize();
-	LEVEL->LoadFromFile(argv[1]);
-	LEVEL->PostLoad();
+  _menu = new GameMenu;
+  _menu->Initialize();
+  _menu->SetLevelManager(_levelMgr);
+  _menu->ActivateLevelManagerContext();
 
-  userInput->BindBall(LEVEL->GetBall());
-  */
-  //_timer = new GameTimer;
-  //_timer->Init();
+  userInput->SetLevelMenuContext(_menu->LevelContext());
+  userInput->SetGameMenuContext(_menu->GameContext());
 
 	InitCallbacks();
 

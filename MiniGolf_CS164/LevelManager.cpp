@@ -10,6 +10,7 @@
 #include "Shader.h"
 
 #include "UserInput.h"
+#include "MenuContext.h"
 
 using namespace std;
 
@@ -40,11 +41,15 @@ void LevelManager::FinalizeLevel(char*)
 {
   unsigned int level = _levels->size() - 1;
   _levels->at(level)->PostLoad();
+  PlayerScore *score = new PlayerScore;
+  score->strokes = 0;
+  _scores->push_back(score);
 }
 
 unsigned char LevelManager::Initialize()
 {
   _levels = new std::vector<Level*>;
+  _scores = new std::vector<PlayerScore*>;
 
   __levelMgrFuncMap["course"] = &LevelManager::InitializeCourse;
   __levelMgrFuncMap["begin_hole"] = &LevelManager::CreateLevel;
@@ -62,8 +67,26 @@ unsigned char LevelManager::Initialize()
 unsigned char LevelManager::DeInitialize()
 {
   //DeleteVectorPtrs(&_levels);
+  //DeleteVectorPtrs(&_scores);
 
   return STATUS_OK;
+}
+
+unsigned int LevelManager::GetHoleCount()
+{
+  return _levels->size();
+}
+
+std::vector<Level*> *LevelManager::Levels()
+{
+  return _levels;
+}
+
+void LevelManager::Hit(MenuContext *mc)
+{
+  _scores->at(_activeLevel)->strokes++;
+  char derp[4];
+  mc->SetStaticText(_activeLevel, std::string(itoa( _scores->at(_activeLevel)->strokes - (int) _levels->at(_activeLevel)->GetPar(), derp, 10)));
 }
 
 template <typename K, typename T>
@@ -144,6 +167,19 @@ void LevelManager::PrevLevel()
   _uin->BindBall(_levels->at(_activeLevel)->GetBall());
 }
 
+std::vector<std::string> LevelManager::LevelNames()
+{
+  std::vector<std::string> strs;
+
+  std::vector<Level*>::iterator it = _levels->begin(), end = _levels->end();
+  for (; it != end; it++)
+  {
+    strs.push_back((*it)->GetName());
+  }
+
+  return strs;
+}
+
 void LevelManager::Render(Camera *c, Shader *s)
 {
   _levels->at(_activeLevel)->Render(c, s);
@@ -152,4 +188,8 @@ void LevelManager::Render(Camera *c, Shader *s)
 void LevelManager::Tick(double dt)
 {
   _levels->at(_activeLevel)->Tick(dt);
+  if (_levels->at(_activeLevel)->Finished())
+  {
+    NextLevel();
+  }
 }

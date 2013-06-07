@@ -1,52 +1,96 @@
 #include "GameMenu.h"
 
-#include "CommonUtils.h"
-
 #include <gl\glew.h>
 #include <gl\freeglut.h>
 
-glm::vec3 selectedColor(1.f, 0.f, 0.f);
-glm::vec3 color(1.f, 1.f, 1.f);
+#include "MenuContext.h"
+
+#include "CommonUtils.h"
+
+#include "LevelManager.h"
+#include "Level.h"
 
 unsigned char GameMenu::Initialize()
 {
-  _text = new std::vector<FloatingText*>;
+  _contexts = new std::vector<MenuContext*>;
 
   return STATUS_OK;
 }
 
 unsigned char GameMenu::DeInitialize()
 {
-  DeleteVectorPtrs(&_text);
+  std::vector<MenuContext*>::iterator it, end;
+
+  it = _contexts->begin(), end = _contexts->end();
+  for (; it != end; it++)
+  {
+    Delete(&(*it));
+  }
 
   return STATUS_OK;
 }
 
-void GameMenu::RenderText(FloatingText *ft)
+// gets called first, this is _contexts->at(0)
+void GameMenu::SetLevelManager(LevelManager *levelMgr)
 {
-  if (ft->selected > 0)
+  std::vector<std::string> names = levelMgr->LevelNames();
+  //MenuContext *mc = new MenuContext;
+  _levelContext = new MenuContext;
+  _levelContext->Initialize();
+
+  std::vector<std::string>::iterator it = names.begin(), end = names.end();
+  for (; it != end; it++)
   {
-    glColor3f(selectedColor.x, selectedColor.y, selectedColor.z);
+    _levelContext->AddSelectableText(*it, glm::vec2(50.f, std::distance(names.begin(), it) * 12));
   }
-  else
+
+  _contexts->push_back(_levelContext);
+
+  _gameContext = new MenuContext();
+  _gameContext->Initialize();
+  for (unsigned int i = 0; i < levelMgr->GetHoleCount(); i++)
   {
-    glColor3f(color.x, color.y, color.z);
-  }
-  
-  glRasterPos2f(ft->pos.x, ft->pos.y);
-  const char *str = ft->str.c_str();
-  int len = (int) strlen(str);
-  for (int i = 0; i < len; i++)
-  {
-    glutBitmapCharacter(ft->font, str[i]);
+    char derp[4];
+    _gameContext->AddStaticText(itoa(-levelMgr->Levels()->at(i)->GetPar(), derp, 10), glm::vec2(50.f + 20.f * (float) i, 20.f));
   }
 }
 
+void GameMenu::ActivateLevelManagerContext()
+{
+  _activeContext = _contexts->at(0);
+}
+
+void GameMenu::CreateGameContext()
+{
+  
+}
+
+/*
 void GameMenu::Render()
 {
-  std::vector<FloatingText*>::iterator it = _text->begin(), end = _text->end();
-  for (; it != end; it++)
+  if (_activeContext)
   {
-    RenderText(*it);
+    _activeContext->Render();
   }
+}
+*/
+
+void GameMenu::Deactivate()
+{
+  _activeContext = nullptr;
+}
+
+MenuContext *GameMenu::LevelContext()
+{
+  return _levelContext;
+}
+
+MenuContext *GameMenu::ProfileContext()
+{
+  return _profileContext;
+}
+
+MenuContext *GameMenu::GameContext()
+{
+  return _gameContext;
 }

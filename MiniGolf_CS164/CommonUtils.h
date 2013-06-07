@@ -1,5 +1,7 @@
 #include <vector>
 
+//typedef unsigned char Status;
+
 #define STATUS_OK 0x1
 
 template <typename T>

@@ -131,6 +131,11 @@ void Level::ReadCup(char* cup)
   _cup->SetGoal(true);
 }
 
+bool Level::Finished()
+{
+  return _finished;
+}
+
 void Level::Render(Camera *c, Shader *s)
 {
   glUniform4fv(s->ambient, 1, (GLfloat*) &_ambientColor);
@@ -149,14 +154,32 @@ void Level::Render(Camera *c, Shader *s)
   _cup->Render(c, s);
 }
 
+unsigned int Level::GetPar()
+{
+  return _par;
+}
+
 void Level::Tick(double t)
 {
   _tee->Tick(t);
   _cup->Tick(t);
   _ball->Tick(t);
+
+  if (_tiles.at(_cup->GetTile()) == _ball->GetTile())
+  {
+    if (glm::distance(*_ball->Matrix()->Position(), *_cup->GetMatrix()->Position()) < 0.06f)
+    {
+      _finished = true;
+    }
+  }
 }
 
 Ball *Level::GetBall()
 {
   return _ball;
+}
+
+std::string Level::GetName()
+{
+  return *_name;
 }

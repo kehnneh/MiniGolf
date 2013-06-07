@@ -81,9 +81,6 @@
     <ClCompile Include="Kengine.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GameTimer.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
     <ClCompile Include="UserInput.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
@@ -123,6 +120,9 @@
     <ClCompile Include="LevelManager.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="MenuContext.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Projection.h">
@@ -144,9 +144,6 @@
       <Filter>Header Files\Data Types</Filter>
     </ClInclude>
     <ClInclude Include="Kengine.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTimer.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="UserInput.h">
@@ -192,6 +189,9 @@
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="GameMenu.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuContext.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>

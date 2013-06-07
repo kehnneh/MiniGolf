@@ -32,6 +32,11 @@ unsigned char Ball::DeInitialize()
   return STATUS_OK;
 }
 
+Tile *Ball::GetTile()
+{
+  return _tile;
+}
+
 unsigned char Ball::CurrentTile(Tile* tile)
 {
   _tile = tile;

@@ -26,6 +26,8 @@ private:
   Tee *_tee, *_cup;
   Ball *_ball;
 
+  bool _finished;
+
 public:
   Level() :
     _lightSourceDirection(1.f, 1.f, 1.f),
@@ -33,7 +35,8 @@ public:
     _name(0),
     _tee(0),
     _cup(0),
-    _ball(0)
+    _ball(0),
+    _finished(false)
   {}
 
   ~Level()
@@ -53,6 +56,8 @@ public:
 
   std::string GetName();
   unsigned int GetPar();
+
+  bool Finished();
 
   void Render(Camera *c, Shader *s);
   void Tick(double t);

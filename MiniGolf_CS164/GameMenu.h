@@ -5,24 +5,20 @@
 
 #include <glm\glm.hpp>
 
-struct FloatingText
-{
-  glm::vec2 pos;
-  int selected;
-  void *font;
-  std::string str;
-};
+class MenuContext;
+class LevelManager;
 
 class GameMenu
 {
 private:
-  std::vector<FloatingText*> *_text;
-
-  void RenderText(FloatingText *ft);
+  std::vector<MenuContext*> *_contexts;
+  MenuContext *_activeContext;
+  MenuContext *_levelContext, *_profileContext, *_gameContext;
 
 public:
   GameMenu() :
-    _text(0)
+    _contexts(0),
+    _activeContext(0)
   {}
 
   ~GameMenu()
@@ -32,6 +28,22 @@ public:
 
   unsigned char DeInitialize();
 
-  void Render();
+  void SetLevelManager(LevelManager *levelMgr);
+
+  void Deactivate();
+
+  void ActivateLevelManagerContext();
+
+  //void SetProfileManager(ProfileManager* profMgr);
+
+  //void ActivateProfileManagerContext();
+
+  void CreateGameContext();
+
+  MenuContext *LevelContext();
+
+  MenuContext *ProfileContext();
+
+  MenuContext *GameContext();
 };
 

@@ -3,6 +3,7 @@
 class Ball;
 class Camera;
 class LevelManager;
+class MenuContext;
 
 class UserInput
 {
@@ -12,6 +13,9 @@ private:
 
   Ball *_ball;
   LevelManager *_levelMgr;
+  MenuContext *_lmc, *_gmc; // level and in-game
+
+  bool _menu, _levelMenu;
 
 private:
 	// Internal data
@@ -25,7 +29,8 @@ public:
 #pragma warning( suppress : 4351 )
 		  m_keys(), m_specialKeys(),
       _rotationSensitivity(50.f), _movementSensitivity(5.f), _directionSensitivity(10.f),
-      _levelMgr(0)
+      _levelMgr(0), _lmc(0),
+      _menu(true), _levelMenu(true)
 	{}
 
 	~UserInput()
@@ -40,6 +45,9 @@ public:
 	void ReleaseKey(unsigned char key);
 
   void SetLevelManager(LevelManager *lvlMgr);
+  void SetLevelMenuContext(MenuContext *mc);
+  //void SetProfileMenuContext(MenuContext *mc);
+  void SetGameMenuContext(MenuContext *mc);
 
   void PressSpecialKey(unsigned char key);
   void ReleaseSpecialKey(unsigned char key);
@@ -48,5 +56,8 @@ public:
 
 	void Init();
 	void DeInit();
+
+  MenuContext *Menu();
+  MenuContext *InGameHUD();
 };
 

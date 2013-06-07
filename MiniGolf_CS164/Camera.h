@@ -65,6 +65,8 @@ public:
 	void IncPitch(float degrees);
 	void IncRoll(float degrees);
 
+  void SetTarget(glm::vec3 target);
+
 	virtual void MoveForward(float distance);
 	virtual void MoveLeft(float distance);
 	virtual void MoveUp(float distance);

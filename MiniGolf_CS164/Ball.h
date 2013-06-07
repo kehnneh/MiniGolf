@@ -61,6 +61,8 @@ public:
 
   bool IsMoving();
 
+  Tile *GetTile();
+
   MatrixObject *Matrix();
 
   MatrixObject *DirectionMatrix();
