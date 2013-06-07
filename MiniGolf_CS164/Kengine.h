@@ -11,6 +11,7 @@ class GameTimer;
 class LevelManager;
 class GameMenu;
 
+/// The actual engine! Does everything the game needs to do.
 class Kengine
 {
 private:
@@ -45,8 +46,12 @@ public:
 	~Kengine()
 	{}
 
+  /// Initializes all subsystems. Rockets are good to go.
 	bool Init(int argc, char** argv);
+
+  /// Performs memory deallocation
 	void DeInit();
 
+  /// Runs the engine, starting glutMainLoop()
 	void Run();
 };

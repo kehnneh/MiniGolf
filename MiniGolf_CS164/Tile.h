@@ -6,6 +6,7 @@
 #include "Shader.h"
 class Ball;
 
+/// A piece of a Level's floor
 class Tile
 {
 private:
@@ -45,39 +46,46 @@ public:
   ~Tile()
   {}
 
+  /// Reads tile data
   void ReadTile(char*);
 
-  /*
-   * _neighbors and _surface will be specifically passed into Tile instances, and are not allocated here
-   */
+  /// Performs data allocation
   unsigned char Initialize();
 
+  /// Performs data deallocation
   unsigned char DeInitialize();
 
+  /// Associates a renderable with this Tile
   unsigned char SetRenderable(Renderable *renderable);
 
+  /// Sets the Tile's adjacency list
   unsigned char SetNeighbors(std::vector<Tile*> *neighbors);
 
+  /// Returns the Tile's adjacency list by IDs
   std::vector<unsigned int> *GetNeighborIds();
 
+  /// Returns the Tile in the adjacency list by its index in the list
   Tile *Neighbor(unsigned int n);
 
+  /// Returns the Tile adjacency list
   std::vector<Tile*> *Neighbors();
 
-  /*
-   * Initializes Meshes for the imaginary bounds between tiles and Renderables for the physical bounds
-   * between the tiles and the world.
-   */
+  /// Initializes Meshes for the imaginary bounds between tiles and Renderables for the physical bounds between the tiles and the world.
   unsigned char PostLoad();
 
+  /// Does nothing! A tile has nothing to update!
   unsigned char Tick(double t);
 
+  /// Renders the Tile
   unsigned char Render(Camera *camera, Shader *s);
 
+  /// Returns the surface normal of the Tile
   glm::vec3 Normal();
 
+  /// Returns a vector of all the phsyical walls associated with the Tile
   std::vector<Renderable*> *RealWalls();
 
+  /// Returns a vector of all the imaginary walls between each Tile that are associated with this Tile
   std::vector<Mesh*> *FakeWalls();
 };
 

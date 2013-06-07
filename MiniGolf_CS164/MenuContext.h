@@ -8,12 +8,14 @@
 #include <gl\glew.h>
 #include <gl\freeglut.h>
 
+/// Text that is displayed at the given position
 struct FloatingText
 {
   glm::vec2 pos;
   std::string str;
 };
 
+/// Defines what gets displayed on-screen for a particular context of menu
 class MenuContext
 {
 private:
@@ -38,26 +40,37 @@ public:
   ~MenuContext()
   {}
 
+  /// Performs data allocation
   unsigned char Initialize();
 
+  /// Performs data deallocation
   unsigned char DeInitialize();
 
+  /// Adds text that can be cycled through and selected
   unsigned char AddSelectableText(std::string, glm::vec2);
 
+  /// Adds text that is displayed
   unsigned char AddStaticText(std::string, glm::vec2);
 
+  /// Changes displayed scoring text on screen
   void SetStaticText(unsigned int level, std::string str);
 
+  /// Sets the color of the selected option
   unsigned char SetSelectedColor(glm::vec3 selectedColor);
 
+  /// Sets the color of non-selected text
   unsigned char SetColor(glm::vec3 color);
 
+  /// Returns the option selected
   unsigned int Selection();
 
+  /// Selects the next option
   void SelectNext();
 
+  /// Selects the previous option
   void SelectPrevious();
 
+  /// Renders the menu
   void Render();
 };
 

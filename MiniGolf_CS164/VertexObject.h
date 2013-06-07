@@ -20,6 +20,7 @@
   typedef glm::vec4 Vec4;
 #endif
 
+/// Vector manipulation class. Supports both standard (slow) vector operations as well as SIMD (fast) vector operations.
 #ifdef _SIMD_OPS_VEC
 class VertexObject : public AlignedAllocationPolicy<16>
 #else

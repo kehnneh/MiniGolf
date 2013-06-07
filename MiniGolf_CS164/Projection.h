@@ -2,6 +2,7 @@
 
 #include <glm\glm.hpp>
 
+/// Defines a projection matrix for displaying things in a perspective projection on the screen
 class Projection
 {
 private:
@@ -20,17 +21,31 @@ public:
 	~Projection()
 	{}
 
+  /// Performs data allocation
 	void Init();
-	void DeInit();
+	
+  /// Performs data deallocation
+  void DeInit();
 
+  /// Sets the Field of View in terms of degrees in screen Y coordinates
 	void fovy(float fovy);
+
+  /// Sets the near clipping plane's depth
 	void znear(float znear);
+
+  /// Sets the far clipping plane's depth
 	void zfar(float zfar);
+
+  /// Sets the screen's width
 	void screenWidth(int w);
+
+  /// Sets the screen's height
 	void screenHeight(int h);
 
+  /// Updates the projection matrix, if necessary
 	void Tick();
 
+  /// Returns the projection matrix itself
 	glm::mat4 const * const Matrix();
 };
 

@@ -1,18 +1,19 @@
 #pragma once
 
-/// STL | GLM stuff
+// STL | GLM stuff
 #include <vector>
 #include <gl\glew.h>
 #include <gl\freeglut.h>
 #include <glm\glm.hpp>
 
-/// My stuff
+// My stuff
 #include "Mesh.h"
 #include "Shader.h"
 
 //
 // No functionality for texturing is provided. It is unnecessary.
 //
+/// Defines an object that can be rendered
 class Renderable
 {
 private:
@@ -48,52 +49,34 @@ public:
   ~Renderable()
   {}
 
-  /*
-   * Allocates memory
-   */
+  /// Performs data allocation
   unsigned char Initialize();
 
-  /*
-   * Frees memory
-   */
+  /// Performs data deallocation
   unsigned char DeInitialize();
 
-  /*
-   * Loads the data from a WaveFront *.obj file, creating a mesh to render
-   * in addition to setting the correct OpenGL draw mode
-   */
+  /// Loads the data from a WaveFront *.obj file, creating a mesh to render in addition to setting the correct OpenGL draw mode
   unsigned char LoadFromFile(std::string filename);
 
-  /*
-   * Does nothing (yet)
-   */
+  /// Generates colors for the mesh based on the last static call to Color
   unsigned char PostLoad();
 
-  /*
-   * Sets the Mesh of this renderable to the given Mesh
-   */
+  /// Assigns the mesh associated with this Renderable
   void SetMesh(Mesh *m);
 
-  /*
-   * Sets the color of the NEXT renderable to call GenerateColors(), i.e. PostLoad()
-   */
+  /// Sets the color of the NEXT renderable to call GenerateColors(), i.e. PostLoad()
   static unsigned char Color(glm::vec4 const & color);
 
+  /// Sets the global shader to use when drawing Renderables
   static void UseShader(Shader* shader);
 
-  /*
-   * Copies data from the CPU and pushes it to the GPU
-   */
+  /// Copies data from the CPU and pushes it to the GPU
   void Render();
 
-  /*
-   * Returns the Mesh object that the renderable draws
-   */
+  /// Returns the Mesh object that the renderable draws
   Mesh *GetMesh();
 
-  /*
-   * Returns the color of the renderable
-   */
+  /// Returns the color of the renderable
   glm::vec4 const * Color() const;
 };
 

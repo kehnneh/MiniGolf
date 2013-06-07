@@ -3,6 +3,7 @@
 #include <gl\glew.h>
 #include <gl\freeglut.h>
 
+/// Defines an OpenGL shader and its associated vertex array and buffer objects
 class Shader
 {
 public:
@@ -47,7 +48,10 @@ public:
 	~Shader()
 	{}
 
+  /// Initializes the shader
 	bool Init(char* vsFile, char* fsFile);
+
+  /// Tells OpenGL to use this shader
 	void Enable();
 
 private:

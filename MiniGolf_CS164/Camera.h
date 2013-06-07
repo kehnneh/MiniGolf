@@ -3,6 +3,7 @@
 #include <glm\glm.hpp>
 //#include <vector>
 
+/// Defines a viewpoint from which the User will look into the world
 class Camera
 {
 protected:
@@ -37,16 +38,27 @@ protected:
 	virtual void ConstructMatrix() = 0;
 
 	// TopDownCamera::InitMatrix will need to override this such that _up and _direction are different
+  /// Initializes the matrix
 	virtual void InitMatrix();
 
+  /// Sets the camera to look into the world as if it was a third person camera
 	void ThirdPerson();
+
+  /// Moves the camera to its target
 	void TranslateToTarget();
+
+  /// Moves the camera to its final position
 	void TranslateToEye();
 
 	// Leave implementation up to the type of camera
+  /// Rotates the camera along an X axis
 	virtual void RotateX() = 0;
-	virtual void RotateY() = 0;
-	virtual void RotateZ() = 0;
+	
+  /// Rotates the camera along a Y axis
+  virtual void RotateY() = 0;
+	
+  /// Rotates the camera along a Z axis
+  virtual void RotateZ() = 0;
 
 public:
 	Camera()
@@ -58,26 +70,49 @@ public:
 	virtual ~Camera()
 	{}
 
+  /// Performs data allocation
 	void Init();
+
+  /// Performs data deallocation
 	void DeInit();
 
+  /// Increments the Yaw angle of the Camera
 	void IncYaw(float degrees);
+
+  /// Increments the Pitch angle of the Camera
 	void IncPitch(float degrees);
+
+  /// Increments the Roll angle of the Camera
 	void IncRoll(float degrees);
 
+  /// Sets the target that the camera will attempt to look at
   void SetTarget(glm::vec3 target);
 
+  /// Moves the camera forward along its Z axis
 	virtual void MoveForward(float distance);
+
+  /// Moves the camera along its X axis
 	virtual void MoveLeft(float distance);
+
+  /// Moves the camera along its Y axis
 	virtual void MoveUp(float distance);
 
+  /// Moves the camera along the world's X axis
 	void TranslateX(float distance);
+
+  /// Moves the camera along the world's Y axis
 	void TranslateY(float distance);
+
+  /// Moves the camera along the world's Z axis
 	void TranslateZ(float distance);
 
+  /// Updates the camera's matrix data
 	void Tick();
 
+  /// Returns a pointer to the camera's matrix
 	glm::mat4 const * const Matrix();
+
+  /// Returns a pointer to the camera's position
 	glm::vec3 const * const GetPosition();
 };
 
