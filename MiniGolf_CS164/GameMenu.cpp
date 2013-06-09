@@ -41,7 +41,7 @@ void GameMenu::SetLevelManager(LevelManager *levelMgr)
   std::vector<std::string>::iterator it = names.begin(), end = names.end();
   for (; it != end; it++)
   {
-    _levelContext->AddSelectableText(*it, glm::vec2(50.f, std::distance(names.begin(), it) * 12));
+    _levelContext->AddSelectableText(*it, glm::vec2(50.f, std::distance(names.begin(), it) * 26));
   }
 
   _contexts->push_back(_levelContext);
@@ -51,7 +51,7 @@ void GameMenu::SetLevelManager(LevelManager *levelMgr)
   for (unsigned int i = 0; i < levelMgr->GetHoleCount(); i++)
   {
     char derp[4];
-    _gameContext->AddStaticText(itoa(-levelMgr->Levels()->at(i)->GetPar(), derp, 10), glm::vec2(50.f + 20.f * (float) i, 20.f));
+    _gameContext->AddStaticText(itoa(-levelMgr->Levels()->at(i)->GetPar(), derp, 10), glm::vec2(50.f + 28.f * (float) i, 20.f));
   }
 }
 

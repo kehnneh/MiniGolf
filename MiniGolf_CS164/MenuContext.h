@@ -32,7 +32,7 @@ private:
 public:
   MenuContext() :
     _selectableText(0), _staticText(0),
-    _glutFont(GLUT_BITMAP_TIMES_ROMAN_10),
+    _glutFont(GLUT_BITMAP_TIMES_ROMAN_24),
     _selection(0),
     _selectedColor(0), _color(0)
   {}
